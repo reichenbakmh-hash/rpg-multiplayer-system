@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG MultiJoueurs - Système d'XP et Quêtes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Audio Elements -->
+    <audio id="bgm" loop volume="0.3">
+        <source src="assets/audio/bgm.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="soundEffect"></audio>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>⚔️ RPG Quest Master ⚔️</h1>
+                <p class="subtitle">Système de Quêtes Multijoueurs</p>
+            </div>
+            <div class="header-controls">
+                <button class="btn-icon" id="soundToggle" onclick="toggleSound()" title="Activer/Désactiver le son">🔊</button>
+                <button class="btn-reset" onclick="resetAllData()">↻ Réinitialiser</button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="quests">📜 Quêtes</button>
+            <button class="tab-btn" data-tab="players">👥 Joueurs</button>
+            <button class="tab-btn" data-tab="raids">⚔️ Raids Coopératifs</button>
+            <button class="tab-btn" data-tab="achievements">🏆 Réalisations</button>
+            <button class="tab-btn" data-tab="calendar">📅 Calendrier</button>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- TAB 1: QUESTS -->
+            <section class="tab-content active" id="quests-tab">
+                <div class="section-header">
+                    <h2>📜 Quêtes du Jour</h2>
+                    <div class="quest-filter">
+                        <button class="filter-btn active" data-filter="all">Toutes</button>
+                        <button class="filter-btn" data-filter="daily">Quotidiennes</button>
+                        <button class="filter-btn" data-filter="weekly">Hebdo</button>
+                        <button class="filter-btn" data-filter="monthly">Mensuel</button>
+                        <button class="filter-btn" data-filter="special">Spéciales</button>
+                    </div>
+                </div>
+
+                <div class="quests-info">
+                    <div class="info-card">
+                        <span class="info-label">📅 Date:</span>
+                        <span class="info-value" id="currentDate"></span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">🌍 Saison:</span>
+                        <span class="info-value" id="currentSeason">Printemps</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">✨ Événement:</span>
+                        <span class="info-value" id="specialEvent">Aucun</span>
+                    </div>
+                </div>
+
+                <div class="quests-grid" id="questsList"></div>
+            </section>
+
+            <!-- TAB 2: PLAYERS -->
+            <section class="tab-content" id="players-tab">
+                <div class="section-header">
+                    <h2>👥 Joueurs</h2>
+                    <button class="btn-add" onclick="openAddPlayerModal()">+ Ajouter Joueur</button>
+                </div>
+
+                <div class="players-list" id="playersList"></div>
+
+                <!-- Add Player Modal -->
+                <div id="addPlayerModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeAddPlayerModal()">&times;</span>
+                        <h2>Créer un Personnage</h2>
+                        <input type="text" id="newPlayerName" placeholder="Nom du joueur" maxlength="20">
+                        <label>Classe:</label>
+                        <select id="newPlayerClass">
+                            <option value="warrior">⚔️ Guerrier</option>
+                            <option value="mage">🔮 Mage</option>
+                            <option value="archer">🏹 Archer</option>
+                            <option value="paladin">✨ Paladin</option>
+                        </select>
+                        <div class="modal-buttons">
+                            <button class="btn-primary" onclick="addPlayer()">Créer</button>
+                            <button class="btn-secondary" onclick="closeAddPlayerModal()">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Player Details Modal -->
+                <div id="playerDetailsModal" class="modal">
+                    <div class="modal-content modal-large">
+                        <span class="close" onclick="closePlayerDetailsModal()">&times;</span>
+                        <div id="playerDetailsContent"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: RAIDS COOPÉRATIFS -->
+            <section class="tab-content" id="raids-tab">
+                <div class="section-header">
+                    <h2>⚔️ Raids Coopératifs</h2>
+                    <button class="btn-add" onclick="openCreateRaidModal()">+ Créer Raid</button>
+                </div>
+
+                <div class="raids-info">
+                    <p>Les raids coopératifs nécessitent au minimum 2 joueurs. Complétez les étages pour gagner des récompenses exceptionnelles !</p>
+                </div>
+
+                <div class="raids-list" id="raidsList"></div>
+
+                <!-- Create Raid Modal -->
+                <div id="createRaidModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeCreateRaidModal()">&times;</span>
+                        <h2>Créer un Raid</h2>
+                        <label>Nom du Raid:</label>
+                        <input type="text" id="raidName" placeholder="ex: Château Noir">
+                        <label>Nombre d'étages:</label>
+                        <select id="raidFloors">
+                            <option value="3">3 étages (Facile)</option>
+                            <option value="5" selected>5 étages (Normal)</option>
+                            <option value="10">10 étages (Difficile)</option>
+                        </select>
+                        <label>Sélectionner les joueurs:</label>
+                        <div id="raidPlayersList" class="players-checkboxes"></div>
+                        <div class="modal-buttons">
+                            <button class="btn-primary" onclick="createRaid()">Lancer le Raid</button>
+                            <button class="btn-secondary" onclick="closeCreateRaidModal()">Annuler</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Raid Battle Modal -->
+                <div id="raidBattleModal" class="modal">
+                    <div class="modal-content modal-large">
+                        <span class="close" onclick="closeRaidBattle()">&times;</span>
+                        <div id="raidBattleContent"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: ACHIEVEMENTS -->
+            <section class="tab-content" id="achievements-tab">
+                <div class="section-header">
+                    <h2>🏆 Réalisations</h2>
+                </div>
+
+                <div class="achievements-grid" id="achievementsList"></div>
+            </section>
+
+            <!-- TAB 5: CALENDAR -->
+            <section class="tab-content" id="calendar-tab">
+                <div class="section-header">
+                    <h2>📅 Calendrier des Quêtes</h2>
+                    <div class="calendar-controls">
+                        <button class="btn-icon" onclick="prevMonth()">◀</button>
+                        <span id="calendarMonth"></span>
+                        <button class="btn-icon" onclick="nextMonth()">▶</button>
+                    </div>
+                </div>
+
+                <div class="calendar-view" id="calendarView"></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div id="confetti"></div>
+
+    <!-- Floating XP Notification -->
+    <div id="xpNotification" class="xp-notification"></div>
+
+    <!-- Floating Damage Notification -->
+    <div id="damageNotification" class="damage-notification"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
