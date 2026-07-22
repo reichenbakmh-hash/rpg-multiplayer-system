@@ -3,49 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="RPG Quest Master - Système de quêtes multijoueurs avec XP, niveaux, raids coopératifs et événements spéciaux.">
+    <meta name="description" content="RPG Quest Master - Système de quêtes multijoueurs avec XP, niveaux, raids, social et chat temps réel.">
     <meta name="theme-color" content="#667eea">
-    <title>RPG MultiJoueurs - Système d'XP et Quêtes</title>
+    <title>RPG MultiJoueurs - Quest Master</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Audio Elements -->
+    <div class="ambient ambient-1"></div>
+    <div class="ambient ambient-2"></div>
+    <div class="ambient ambient-3"></div>
+
+    <!-- Audio -->
     <audio id="bgm" loop preload="auto">
         <source src="assets/audio/bgm.mp3" type="audio/mpeg">
     </audio>
-
     <audio id="soundEffect" preload="auto">
         <source src="assets/audio/success.mp3" type="audio/mpeg">
     </audio>
 
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <h1>⚔️ RPG Quest Master ⚔️</h1>
-                <p class="subtitle">Système de Quêtes Multijoueurs</p>
+    <div class="app-shell">
+        <!-- HERO / TOP BAR -->
+        <header class="hero-panel">
+            <div class="hero-main">
+                <div class="hero-badge">⚔️ RPG Quest Master</div>
+                <h1>Construis une vie de joueur</h1>
+                <p class="hero-subtitle">
+                    Quêtes, niveaux, statistiques IRL, raids coopératifs, chat en direct et progression persistante.
+                </p>
             </div>
-            <div class="header-controls">
+
+            <div class="hero-actions">
                 <button class="btn-icon" id="soundToggle" onclick="toggleSound()" title="Activer/Désactiver le son">🔊</button>
                 <button class="btn-reset" onclick="resetAllData()">↻ Réinitialiser</button>
             </div>
         </header>
 
-        <!-- Navigation Tabs -->
+        <section class="hero-dashboard">
+            <div class="info-card">
+                <span class="info-label">📅 Date:</span>
+                <span class="info-value" id="currentDate"></span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">🌍 Saison:</span>
+                <span class="info-value" id="currentSeason">Printemps</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">✨ Événement:</span>
+                <span class="info-value" id="specialEvent">Aucun</span>
+            </div>
+            <div class="info-card" id="totalPlayersCard">
+                <span class="info-label">👥 Joueurs:</span>
+                <span class="info-value">0</span>
+            </div>
+            <div class="info-card" id="totalCompletedCard">
+                <span class="info-label">✅ Quêtes accomplies:</span>
+                <span class="info-value">0</span>
+            </div>
+            <div class="info-card" id="avgLevelCard">
+                <span class="info-label">⭐ Niveau moyen:</span>
+                <span class="info-value">0.0</span>
+            </div>
+            <div class="info-card" id="focusStatCard">
+                <span class="info-label">🎯 Focus du jour:</span>
+                <span class="info-value">Créer un joueur</span>
+            </div>
+        </section>
+
+        <!-- NAVIGATION -->
         <nav class="nav-tabs">
             <button class="tab-btn active" data-tab="quests">📜 Quêtes</button>
             <button class="tab-btn" data-tab="players">👥 Joueurs</button>
-            <button class="tab-btn" data-tab="raids">⚔️ Raids Coopératifs</button>
+            <button class="tab-btn" data-tab="raids">⚔️ Raids</button>
             <button class="tab-btn" data-tab="achievements">🏆 Réalisations</button>
             <button class="tab-btn" data-tab="calendar">📅 Calendrier</button>
+            <button class="tab-btn" data-tab="social">💬 Social</button>
         </nav>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- TAB 1: QUESTS -->
+        <!-- MAIN -->
+        <main class="main-content">
+            <!-- QUESTS -->
             <section class="tab-content active" id="quests-tab">
                 <div class="section-header">
-                    <h2>📜 Quêtes du Jour</h2>
+                    <div>
+                        <h2>📜 Quêtes du jour</h2>
+                        <p class="section-subtitle">Quotidiennes, hebdomadaires, mensuelles, annuelles et spéciales.</p>
+                    </div>
+
                     <div class="quest-filter">
                         <button class="filter-btn active" data-filter="all">Toutes</button>
                         <button class="filter-btn" data-filter="daily">Quotidiennes</button>
@@ -69,33 +112,53 @@
                         <span class="info-label">✨ Événement:</span>
                         <span class="info-value" id="specialEvent">Aucun</span>
                     </div>
+                    <div class="info-card" id="totalPlayersCard">
+                        <span class="info-label">👥 Joueurs:</span>
+                        <span class="info-value">0</span>
+                    </div>
+                    <div class="info-card" id="totalCompletedCard">
+                        <span class="info-label">✅ Quêtes accomplies:</span>
+                        <span class="info-value">0</span>
+                    </div>
+                    <div class="info-card" id="avgLevelCard">
+                        <span class="info-label">⭐ Niveau moyen:</span>
+                        <span class="info-value">0.0</span>
+                    </div>
+                    <div class="info-card" id="focusStatCard">
+                        <span class="info-label">🎯 Focus du jour:</span>
+                        <span class="info-value">Créer un joueur</span>
+                    </div>
                 </div>
 
                 <div class="quests-grid" id="questsList"></div>
             </section>
 
-            <!-- TAB 2: PLAYERS -->
+            <!-- PLAYERS -->
             <section class="tab-content" id="players-tab">
                 <div class="section-header">
-                    <h2>👥 Joueurs</h2>
+                    <div>
+                        <h2>👥 Joueurs</h2>
+                        <p class="section-subtitle">Chaque joueur possède ses statistiques, son inventaire et son titre.</p>
+                    </div>
                     <button class="btn-add" onclick="openAddPlayerModal()">+ Ajouter Joueur</button>
                 </div>
 
                 <div class="players-list" id="playersList"></div>
 
-                <!-- Add Player Modal -->
                 <div id="addPlayerModal" class="modal">
                     <div class="modal-content">
                         <span class="close" onclick="closeAddPlayerModal()">&times;</span>
-                        <h2>Créer un Personnage</h2>
-                        <input type="text" id="newPlayerName" placeholder="Nom du joueur" maxlength="20">
-                        <label>Classe:</label>
-                        <select id="newPlayerClass">
-                            <option value="warrior">⚔️ Guerrier</option>
-                            <option value="mage">🔮 Mage</option>
-                            <option value="archer">🏹 Archer</option>
-                            <option value="paladin">✨ Paladin</option>
-                        </select>
+                        <h2>Créer un personnage</h2>
+                        <div class="modal-form">
+                            <input type="text" id="newPlayerName" placeholder="Nom du joueur" maxlength="20">
+                            <label>Classe:</label>
+                            <select id="newPlayerClass">
+                                <option value="warrior">⚔️ Guerrier</option>
+                                <option value="mage">🔮 Mage</option>
+                                <option value="archer">🏹 Archer</option>
+                                <option value="paladin">✨ Paladin</option>
+                            </select>
+                        </div>
                         <div class="modal-buttons">
                             <button class="btn-primary" onclick="addPlayer()">Créer</button>
                             <button class="btn-secondary" onclick="closeAddPlayerModal()">Annuler</button>
@@ -103,7 +166,6 @@
                     </div>
                 </div>
 
-                <!-- Player Details Modal -->
                 <div id="playerDetailsModal" class="modal">
                     <div class="modal-content modal-large">
                         <span class="close" onclick="closePlayerDetailsModal()">&times;</span>
@@ -112,42 +174,45 @@
                 </div>
             </section>
 
-            <!-- TAB 3: RAIDS COOPÉRATIFS -->
+            <!-- RAIDS -->
             <section class="tab-content" id="raids-tab">
                 <div class="section-header">
-                    <h2>⚔️ Raids Coopératifs</h2>
+                    <div>
+                        <h2>⚔️ Raids coopératifs</h2>
+                        <p class="section-subtitle">Des combats de groupe pour gagner de grosses récompenses.</p>
+                    </div>
                     <button class="btn-add" onclick="openCreateRaidModal()">+ Créer Raid</button>
                 </div>
 
                 <div class="raids-info">
-                    <p>Les raids coopératifs nécessitent au minimum 2 joueurs. Complétez les étages pour gagner des récompenses exceptionnelles !</p>
+                    <p>Les raids nécessitent au moins 2 joueurs. Plus l’étage monte, plus le danger grimpe. Les humains adorent fabriquer des problèmes en échange de loot.</p>
                 </div>
 
                 <div class="raids-list" id="raidsList"></div>
 
-                <!-- Create Raid Modal -->
                 <div id="createRaidModal" class="modal">
                     <div class="modal-content">
                         <span class="close" onclick="closeCreateRaidModal()">&times;</span>
-                        <h2>Créer un Raid</h2>
-                        <label>Nom du Raid:</label>
-                        <input type="text" id="raidName" placeholder="ex: Château Noir">
-                        <label>Nombre d'étages:</label>
-                        <select id="raidFloors">
-                            <option value="3">3 étages (Facile)</option>
-                            <option value="5" selected>5 étages (Normal)</option>
-                            <option value="10">10 étages (Difficile)</option>
-                        </select>
-                        <label>Sélectionner les joueurs:</label>
-                        <div id="raidPlayersList" class="players-checkboxes"></div>
+                        <h2>Créer un raid</h2>
+                        <div class="modal-form">
+                            <label>Nom du raid:</label>
+                            <input type="text" id="raidName" placeholder="ex: Château Noir">
+                            <label>Nombre d'étages:</label>
+                            <select id="raidFloors">
+                                <option value="3">3 étages (Facile)</option>
+                                <option value="5" selected>5 étages (Normal)</option>
+                                <option value="10">10 étages (Difficile)</option>
+                            </select>
+                            <label>Sélectionner les joueurs:</label>
+                            <div id="raidPlayersList" class="players-checkboxes"></div>
+                        </div>
                         <div class="modal-buttons">
-                            <button class="btn-primary" onclick="createRaid()">Lancer le Raid</button>
+                            <button class="btn-primary" onclick="createRaid()">Lancer le raid</button>
                             <button class="btn-secondary" onclick="closeCreateRaidModal()">Annuler</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Raid Battle Modal -->
                 <div id="raidBattleModal" class="modal">
                     <div class="modal-content modal-large">
                         <span class="close" onclick="closeRaidBattle()">&times;</span>
@@ -156,19 +221,24 @@
                 </div>
             </section>
 
-            <!-- TAB 4: ACHIEVEMENTS -->
+            <!-- ACHIEVEMENTS -->
             <section class="tab-content" id="achievements-tab">
                 <div class="section-header">
-                    <h2>🏆 Réalisations</h2>
+                    <div>
+                        <h2>🏆 Réalisations</h2>
+                        <p class="section-subtitle">Succès, badges et progression à long terme.</p>
+                    </div>
                 </div>
-
                 <div class="achievements-grid" id="achievementsList"></div>
             </section>
 
-            <!-- TAB 5: CALENDAR -->
+            <!-- CALENDAR -->
             <section class="tab-content" id="calendar-tab">
                 <div class="section-header">
-                    <h2>📅 Calendrier des Quêtes</h2>
+                    <div>
+                        <h2>📅 Calendrier des quêtes</h2>
+                        <p class="section-subtitle">Les événements spéciaux sont mis en évidence automatiquement.</p>
+                    </div>
                     <div class="calendar-controls">
                         <button class="btn-icon" onclick="prevMonth()">◀</button>
                         <span id="calendarMonth"></span>
@@ -178,19 +248,86 @@
 
                 <div class="calendar-view" id="calendarView"></div>
             </section>
-        </div>
+
+            <!-- SOCIAL -->
+            <section class="tab-content" id="social-tab">
+                <div class="section-header">
+                    <div>
+                        <h2>💬 Social</h2>
+                        <p class="section-subtitle">Login, chat de groupe, messages privés, journal d’actions et classement.</p>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                        <span class="badge-soft" id="authStatus">Connexion requise</span>
+                        <button class="btn-secondary" id="logoutBtn" style="display:none;">Déconnexion</button>
+                    </div>
+                </div>
+
+                <div class="social-grid">
+                    <div class="social-card">
+                        <h3>🔐 Authentification</h3>
+                        <div class="auth-fields">
+                            <input id="authDisplayName" type="text" placeholder="Pseudo / nom affiché" maxlength="24">
+                            <input id="authEmail" type="email" placeholder="Email">
+                            <input id="authPassword" type="password" placeholder="Mot de passe">
+                            <div class="auth-actions">
+                                <button class="btn-primary" id="btnLogin">Connexion</button>
+                                <button class="btn-secondary" id="btnRegister">Créer un compte</button>
+                            </div>
+                            <p class="helper-text">
+                                Le compte sert à synchroniser le RPG, les logs et les messages. Le localStorage reste actif en secours.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="social-card chat-shell">
+                        <h3>🌍 Chat de groupe</h3>
+                        <div class="chat-messages" id="globalChatMessages"></div>
+                        <div class="chat-input-row">
+                            <input id="globalChatInput" type="text" placeholder="Écrire au groupe...">
+                            <button class="btn-primary" id="globalChatSend">Envoyer</button>
+                        </div>
+                    </div>
+
+                    <div class="social-card chat-shell">
+                        <h3>📨 Messages privés</h3>
+                        <div class="private-layout">
+                            <div class="private-users">
+                                <div class="chat-user-list" id="dmUserList"></div>
+                            </div>
+                            <div class="private-thread">
+                                <div class="badge-soft" id="dmTargetLabel">Aucun destinataire</div>
+                                <div class="chat-messages" id="privateChatMessages"></div>
+                                <div class="chat-input-row">
+                                    <input id="privateChatInput" type="text" placeholder="Écrire un message privé...">
+                                    <button class="btn-primary" id="privateChatSend">Envoyer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="social-card">
+                        <div class="section-header compact">
+                            <h3>🧾 Journal d’actions</h3>
+                            <button class="btn-secondary" id="clearActionLogsBtn">Vider</button>
+                        </div>
+                        <div id="actionLogsList" class="log-list"></div>
+                    </div>
+
+                    <div class="social-card">
+                        <h3>🏅 Classement</h3>
+                        <div id="leaderboardList" class="leaderboard-list"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <!-- Confetti Container -->
+    <!-- Floating UI -->
     <div id="confetti"></div>
-
-    <!-- Floating XP Notification -->
     <div id="xpNotification" class="xp-notification"></div>
-
-    <!-- Floating Damage Notification -->
     <div id="damageNotification" class="damage-notification"></div>
 
-    <!-- Firebase Config -->
+    <!-- Firebase -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
       import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
@@ -208,8 +345,8 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      window.db = db;
       window.firebaseApp = app;
+      window.db = db;
     </script>
 
     <!-- Unblock audio on first interaction -->
@@ -223,7 +360,6 @@
       }, { once: true });
     </script>
 
-    <!-- Ton script principal -->
     <script src="script.js" defer></script>
 </body>
 </html>
