@@ -1,1342 +1,992 @@
 // ==================== CONFIGURATION ====================
 
 const GAME_CONFIG = {
-    seasons: {
-        spring: { name: 'Printemps', emoji: '🌸', months: [3, 4, 5] },
-        summer: { name: 'Été', emoji: '☀️', months: [6, 7, 8] },
-        autumn: { name: 'Automne', emoji: '🍂', months: [9, 10, 11] },
-        winter: { name: 'Hiver', emoji: '❄️', months: [12, 1, 2] }
-    },
-    
-    questRarities: {
-        'E': { name: 'Très facile', xp: 5, color: '#95a5a6', icon: '⭐' },
-        'D': { name: 'Facile', xp: 10, color: '#3498db', icon: '⭐' },
-        'C': { name: 'Simple', xp: 20, color: '#3498db', icon: '⭐⭐' },
-        'B': { name: 'Moyen', xp: 30, color: '#9b59b6', icon: '⭐⭐' },
-        'A': { name: 'Difficile', xp: 40, color: '#9b59b6', icon: '⭐⭐⭐' },
-        'S': { name: 'Hebdomadaire', xp: 60, color: '#f39c12', icon: '⭐⭐⭐' },
-        'SS': { name: 'Mensuelle', xp: 80, color: '#e74c3c', icon: '⭐⭐⭐⭐' },
-        'SSS': { name: 'Annuelle', xp: 100, color: '#e74c3c', icon: '⭐⭐⭐⭐⭐' }
-    },
-
-    classesInfo: {
-        warrior: { emoji: '⚔️', name: 'Guerrier', color: '#e74c3c' },
-        mage: { emoji: '🔮', name: 'Mage', color: '#9b59b6' },
-        archer: { emoji: '🏹', name: 'Archer', color: '#2ecc71' },
-        paladin: { emoji: '✨', name: 'Paladin', color: '#f39c12' }
-    },
-
-    // Jours de fêtes internationales
-    internationalHolidays: [
-        { date: '03-08', name: 'Journée des Femmes', emoji: '👩' },
-        { date: '03-21', name: 'Journée Mondiale de l\'Eau', emoji: '💧' },
-        { date: '04-22', name: 'Jour de la Terre', emoji: '🌍' },
-        { date: '05-01', name: 'Fête du Travail', emoji: '👨‍💼' },
-        { date: '06-05', name: 'Journée Mondiale de l\'Environnement', emoji: '🌱' },
-        { date: '06-21', name: 'Journée de la Musique', emoji: '🎵' },
-        { date: '10-31', name: 'Halloween', emoji: '👻' },
-        { date: '12-25', name: 'Noël', emoji: '🎄' }
-    ],
-
-    // Fêtes locales à Madagascar
-    madagascarHolidays: [
-        { date: '01-01', name: 'Nouvel An', emoji: '🎆' },
-        { date: '03-29', name: 'Commémoration de la Rébellion de 1947', emoji: '🇲🇬' },
-        { date: '05-01', name: 'Fête du Travail', emoji: '👨‍💼' },
-        { date: '06-26', name: 'Fête de l\'Indépendance', emoji: '🇲🇬' },
-        { date: '08-15', name: 'Assomption', emoji: '⛪' },
-        { date: '11-01', name: 'Toussaint', emoji: '🕯️' },
-        { date: '12-25', name: 'Noël', emoji: '🎄' }
-    ],
-
-    // Fêtes au Japon
-    japanHolidays: [
-        { date: '01-01', name: 'Nouvel An Japonais', emoji: '🎋' },
-        { date: '01-10', name: 'Jour de la Majorité', emoji: '👘' },
-        { date: '02-11', name: 'Fondation du Japon', emoji: '🏯' },
-        { date: '03-21', name: 'Équinoxe du Printemps', emoji: '🌸' },
-        { date: '05-03', name: 'Fête de la Constitution', emoji: '📜' },
-        { date: '05-05', name: 'Jour des Enfants', emoji: '🎏' },
-        { date: '07-15', name: 'Fête de Obon', emoji: '🏮' },
-        { date: '09-23', name: 'Équinoxe d\'Automne', emoji: '🍂' },
-        { date: '11-03', name: 'Jour de la Culture', emoji: '🎭' },
-        { date: '11-23', name: 'Jour de Remerciement', emoji: '🙏' }
-    ]
+  leveling: {
+    baseXP: 100,
+    growth: 1.18
+  },
+  seasons: {
+    spring: { name: 'Printemps', emoji: '🌸', months: [3, 4, 5] },
+    summer: { name: 'Été', emoji: '☀️', months: [6, 7, 8] },
+    autumn: { name: 'Automne', emoji: '🍂', months: [9, 10, 11] },
+    winter: { name: 'Hiver', emoji: '❄️', months: [12, 1, 2] }
+  },
+  questRarities: {
+    E: { name: 'Très facile', xp: 5, color: '#95a5a6', icon: '⭐' },
+    D: { name: 'Facile', xp: 10, color: '#3498db', icon: '⭐' },
+    C: { name: 'Simple', xp: 20, color: '#2ecc71', icon: '⭐⭐' },
+    B: { name: 'Moyen', xp: 30, color: '#9b59b6', icon: '⭐⭐' },
+    A: { name: 'Difficile', xp: 40, color: '#f39c12', icon: '⭐⭐⭐' },
+    S: { name: 'Hebdomadaire', xp: 60, color: '#e67e22', icon: '⭐⭐⭐' },
+    SS: { name: 'Mensuelle', xp: 80, color: '#e74c3c', icon: '⭐⭐⭐⭐' },
+    SSS: { name: 'Annuelle', xp: 100, color: '#c0392b', icon: '⭐⭐⭐⭐⭐' }
+  },
+  classesInfo: {
+    warrior: { emoji: '⚔️', name: 'Guerrier', color: '#e74c3c' },
+    mage: { emoji: '🔮', name: 'Mage', color: '#9b59b6' },
+    archer: { emoji: '🏹', name: 'Archer', color: '#2ecc71' },
+    paladin: { emoji: '✨', name: 'Paladin', color: '#f39c12' }
+  },
+  internationalHolidays: [
+    { type: 'date', date: '03-08', name: 'Journée des Femmes', emoji: '👩' },
+    { type: 'date', date: '03-21', name: 'Journée Mondiale de l\'Eau', emoji: '💧' },
+    { type: 'date', date: '04-22', name: 'Jour de la Terre', emoji: '🌍' },
+    { type: 'date', date: '05-01', name: 'Fête du Travail', emoji: '👨‍💼' },
+    { type: 'date', date: '06-05', name: 'Journée Mondiale de l\'Environnement', emoji: '🌱' },
+    { type: 'date', date: '06-21', name: 'Journée de la Musique', emoji: '🎵' },
+    { type: 'date', date: '10-31', name: 'Halloween', emoji: '👻' },
+    { type: 'date', date: '12-25', name: 'Noël', emoji: '🎄' }
+  ],
+  madagascarHolidays: [
+    { type: 'date', date: '01-01', name: 'Nouvel An', emoji: '🎆' },
+    { type: 'date', date: '03-29', name: 'Commémoration de la Rébellion de 1947', emoji: '🇲🇬' },
+    { type: 'date', date: '05-01', name: 'Fête du Travail', emoji: '👨‍💼' },
+    { type: 'date', date: '06-26', name: 'Fête de l\'Indépendance', emoji: '🇲🇬' },
+    { type: 'date', date: '08-15', name: 'Assomption', emoji: '⛪' },
+    { type: 'date', date: '11-01', name: 'Toussaint', emoji: '🕯️' },
+    { type: 'date', date: '12-25', name: 'Noël', emoji: '🎄' }
+  ],
+  japanHolidays: [
+    { type: 'date', date: '01-01', name: 'Nouvel An Japonais', emoji: '🎋' },
+    { type: 'date', date: '01-10', name: 'Jour de la Majorité', emoji: '👘' },
+    { type: 'date', date: '02-11', name: 'Fondation du Japon', emoji: '🏯' },
+    { type: 'date', date: '03-21', name: 'Équinoxe du Printemps', emoji: '🌸' },
+    { type: 'date', date: '05-03', name: 'Fête de la Constitution', emoji: '📜' },
+    { type: 'date', date: '05-05', name: 'Jour des Enfants', emoji: '🎏' },
+    { type: 'range', month: 8, startDay: 13, endDay: 16, name: 'Obon', emoji: '🏮' },
+    { type: 'date', date: '09-23', name: 'Équinoxe d\'Automne', emoji: '🍂' },
+    { type: 'date', date: '11-03', name: 'Jour de la Culture', emoji: '🎭' },
+    { type: 'date', date: '11-23', name: 'Jour de Remerciement', emoji: '🙏' }
+  ]
 };
 
-// ==================== DATA MANAGEMENT ====================
-
-class GameData {
-    constructor() {
-        this.load();
-    }
-
-    load() {
-        const data = localStorage.getItem('rpg_game_data');
-        if (data) {
-            const parsed = JSON.parse(data);
-            this.players = parsed.players || {};
-            this.quests = parsed.quests || {};
-            this.raids = parsed.raids || [];
-            this.achievements = parsed.achievements || {};
-            this.calendar = parsed.calendar || {};
-            this.soundEnabled = parsed.soundEnabled !== false;
-        } else {
-            this.players = {};
-            this.quests = {};
-            this.raids = [];
-            this.achievements = {};
-            this.calendar = {};
-            this.soundEnabled = true;
-        }
-    }
-
-    save() {
-        const data = {
-            players: this.players,
-            quests: this.quests,
-            raids: this.raids,
-            achievements: this.achievements,
-            calendar: this.calendar,
-            soundEnabled: this.soundEnabled
-        };
-        localStorage.setItem('rpg_game_data', JSON.stringify(data));
-    }
-
-    reset() {
-        localStorage.removeItem('rpg_game_data');
-        this.load();
-    }
-}
-
-// ==================== QUEST SYSTEM ====================
-
-class QuestSystem {
-    constructor() {
-        this.quests = new Map();
-        this.generateDailyQuests();
-        this.generateWeeklyQuests();
-        this.generateMonthlyQuests();
-        this.generateAnnualQuests();
-        this.generateSpecialQuests();
-    }
-
-    generateDailyQuests() {
-        const dailyRarities = ['E', 'D', 'C', 'B', 'A'];
-        const questTitles = {
-    E: ['Boire 2 verres d’eau', 'Marcher 500 pas', 'Lire 1 page d’un livre', 'Faire 5 respirations profondes'],
-    D: ['Faire 10 pompes', 'Écrire 3 lignes de journal', 'tenir 2h sans téléphone', 'Envoyer un message à un ami'],
-    C: ['Cuisiner un repas maison', 'Apprendre 5 mots en anglais', 'Faire 15 minutes de méditation'],
-    B: ['Courir 2 km', 'Compléter une tâche importante', 'Apprendre une nouvelle compétence'],
-    A: ['Faire 1 heure de sport', 'Terminer un projet en cours', 'Passer une journée sans réseaux sociaux']
+const QUEST_POOLS = {
+  daily: {
+    E: ['Boire 2 verres d’eau', 'Faire 5 respirations profondes', 'Marcher 500 pas', 'Lire 1 page d’un livre', 'Ranger un petit espace'],
+    D: ['Faire 10 pompes', 'Écrire 3 lignes de journal', 'Envoyer un message positif à un ami', 'Rester 2h sans téléphone', 'S’étirer 10 minutes'],
+    C: ['Cuisiner un repas maison', 'Apprendre 5 mots dans une langue', 'Méditer 15 minutes', 'Préparer la to-do du lendemain', 'Nettoyer un coin de la chambre'],
+    B: ['Courir 2 km', 'Compléter une tâche importante', 'Apprendre une nouvelle compétence', 'Faire 45 minutes de travail profond', 'Aider quelqu’un concrètement'],
+    A: ['Faire 1 heure de sport', 'Terminer un projet en cours', 'Passer une journée sans réseaux sociaux', 'Réaliser une session de concentration de 2h', 'Dormir à heure fixe']
+  },
+  weekly: [
+    { title: 'Duel épique', description: 'Terminer une activité coopérative avec un autre joueur.' },
+    { title: 'Trésor caché', description: 'Découvrir ou apprendre quelque chose de nouveau hors routine.' },
+    { title: 'Protection du royaume', description: 'Réduire une source de désordre dans ton environnement.' },
+    { title: 'Marche du héros', description: 'Cumuler une grosse session de marche ou d’activité physique.' }
+  ],
+  monthly: [
+    { title: 'Domination des donjons', description: 'Boucler une mission exigeante du mois.' },
+    { title: 'Maître du combat', description: 'Finir un objectif personnel marquant.' },
+    { title: 'Trésor des dragons', description: 'Faire un vrai progrès financier ou d’organisation.' },
+    { title: 'Héros légendaire', description: 'Soutenir plusieurs personnes ou projets sur la durée.' }
+  ],
+  annual: [
+    { title: 'Conquête du royaume', description: 'Achever un objectif de fond qui change ton niveau global.' },
+    { title: 'Ascension ultime', description: 'Tenir une discipline importante sur toute l’année.' },
+    { title: 'Légende vivante', description: 'Construire quelque chose de solide, utile et durable.' },
+    { title: 'Couronnement', description: 'Atteindre un cap majeur que tu visais depuis longtemps.' }
+  ]
 };
-        };
-
-        dailyRarities.forEach(rarity => {
-            const count = { E: 5, D: 4, C: 3, B: 2, A: 1 }[rarity];
-            for (let i = 0; i < count; i++) {
-                const questId = `daily_${rarity}_${i}`;
-                const titles = questTitles[rarity];
-                const quest = {
-                    id: questId,
-                    type: 'daily',
-                    rarity: rarity,
-                    title: titles[Math.floor(Math.random() * titles.length)],
-                    xp: GAME_CONFIG.questRarities[rarity].xp,
-                    gold: Math.floor(GAME_CONFIG.questRarities[rarity].xp * 1.5),
-                    difficulty: rarity,
-                    completed: false,
-                    completedAt: null
-                };
-                this.quests.set(questId, quest);
-            }
-        });
-    }
-
-    generateWeeklyQuests() {
-        const weeklyQuests = [
-            { title: 'Nettoyer la chambre', description: 'tout devrait être bien rangé avec pj' },
-            { title: 'Trésor caché', description: 'Trouvez un ami qui parle japonais et demandez lui de ses nouvelles en japonais et si vous ne connaissez personne parlez à un inconnu' },
-            { title: 'Duel épique', description: 'Battez des ennemis ensemble dans un jeu vidéo' },
-            { title: 'Protéger la cité', description: 'Posez votre téléphone et allez vérifier vos objets et déterminez les choses dont vous ne pretez pas attention en général' }
-        ];
-
-        const week = Math.floor(new Date().getTime() / (7 * 24 * 60 * 60 * 1000));
-        const quest = weeklyQuests[week % weeklyQuests.length];
-        
-        const questId = `weekly_${week}`;
-        this.quests.set(questId, {
-            id: questId,
-            type: 'weekly',
-            rarity: 'S',
-            title: quest.title,
-            description: quest.description,
-            xp: 60,
-            gold: 90,
-            difficulty: 'S',
-            completed: false,
-            completedAt: null
-        });
-    }
-
-    generateMonthlyQuests() {
-        const monthlyQuests = [
-            { title: 'Dominez le donjons', description: 'Atteignez le 10e étage' },
-            { title: 'Maître du combat', description: 'Gagnez 20 combats dans un jeu' },
-            { title: 'Trésor des dragons', description: 'Récupérez une somme d argent en faisant une affaire' },
-            { title: 'Héros légendaire', description: 'aidez les gens dans leur taches durant plus de 120h' }
-        ];
-
-        const month = new Date().toISOString().slice(0, 7);
-        const questIndex = parseInt(month.split('-').join('')) % monthlyQuests.length;
-        const quest = monthlyQuests[questIndex];
-
-        const questId = `monthly_${month}`;
-        this.quests.set(questId, {
-            id: questId,
-            type: 'monthly',
-            rarity: 'SS',
-            title: quest.title,
-            description: quest.description,
-            xp: 80,
-            gold: 120,
-            difficulty: 'SS',
-            completed: false,
-            completedAt: null
-        });
-    }
-
-    generateAnnualQuests() {
-        const year = new Date().getFullYear();
-        const questId = `annual_${year}`;
-        
-        if (!this.quests.has(questId)) {
-            this.quests.set(questId, {
-                id: questId,
-                type: 'annual',
-                rarity: 'SSS',
-                title: 'Conquérir le coeur de plusieurs personnes avec plus de 60 personnes',
-                description: 'Devenir le plus grand héros du royaume en aidant un nombre massif de personnes avec plus de 86 personnes',
-                xp: 100,
-                gold: 200,
-                difficulty: 'SSS',
-                completed: false,
-                completedAt: null
-            });
-        }
-    }
-
-    generateSpecialQuests() {
-        const today = new Date();
-        const dateStr = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-        
-        // Vérifier les fêtes internationales
-        GAME_CONFIG.internationalHolidays.forEach(holiday => {
-            if (holiday.date === dateStr) {
-                const questId = `special_${holiday.name}_${today.getFullYear()}`;
-                this.quests.set(questId, {
-                    id: questId,
-                    type: 'special',
-                    rarity: 'A',
-                    title: `Célébration: ${holiday.name}`,
-                    description: `Complétez les défis spéciaux de ${holiday.name}`,
-                    emoji: holiday.emoji,
-                    xp: 50,
-                    gold: 75,
-                    difficulty: 'A',
-                    completed: false,
-                    completedAt: null
-                });
-            }
-        });
-
-        // Vérifier les fêtes à Madagascar
-        GAME_CONFIG.madagascarHolidays.forEach(holiday => {
-            if (holiday.date === dateStr) {
-                const questId = `special_madagascar_${holiday.name}_${today.getFullYear()}`;
-                this.quests.set(questId, {
-                    id: questId,
-                    type: 'special',
-                    rarity: 'A',
-                    title: `🇲🇬 ${holiday.name}`,
-                    description: `Célébrez avec les habitants de Madagascar`,
-                    emoji: holiday.emoji,
-                    xp: 50,
-                    gold: 75,
-                    difficulty: 'A',
-                    completed: false,
-                    completedAt: null
-                });
-            }
-        });
-
-        // Vérifier les fêtes au Japon
-        GAME_CONFIG.japanHolidays.forEach(holiday => {
-            if (holiday.date === dateStr) {
-                const questId = `special_japan_${holiday.name}_${today.getFullYear()}`;
-                this.quests.set(questId, {
-                    id: questId,
-                    type: 'special',
-                    rarity: 'A',
-                    title: `🏯 ${holiday.name}`,
-                    description: `Participez aux célébrations japonaises`,
-                    emoji: holiday.emoji,
-                    xp: 50,
-                    gold: 75,
-                    difficulty: 'A',
-                    completed: false,
-                    completedAt: null
-                });
-            }
-        });
-    }
-
-    getQuestsByType(type) {
-        return Array.from(this.quests.values()).filter(q => q.type === type);
-    }
-
-    getSpecialEventToday() {
-        const today = new Date();
-        const dateStr = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-        
-        let event = null;
-        
-        GAME_CONFIG.internationalHolidays.forEach(holiday => {
-            if (holiday.date === dateStr) event = holiday;
-        });
-        
-        if (!event) {
-            GAME_CONFIG.madagascarHolidays.forEach(holiday => {
-                if (holiday.date === dateStr) event = holiday;
-            });
-        }
-        
-        if (!event) {
-            GAME_CONFIG.japanHolidays.forEach(holiday => {
-                if (holiday.date === dateStr) event = holiday;
-            });
-        }
-        
-        return event;
-    }
-}
-
-// ==================== PLAYER SYSTEM ====================
-
-class Player {
-    constructor(id, name, playerClass) {
-        this.id = id;
-        this.name = name;
-        this.class = playerClass;
-        this.level = 1;
-        this.xp = 0;
-        this.xpNeeded = 100;
-        this.gold = 0;
-        this.completedQuests = [];
-        this.skills = this.initializeSkills();
-        this.badges = [];
-        this.createdAt = new Date().toISOString();
-    }
-
-    initializeSkills() {
-        const baseSkills = {
-            warrior: { strength: 1.2, defense: 1.0, speed: 0.8 },
-            mage: { strength: 0.8, defense: 0.8, speed: 1.1 },
-            archer: { strength: 1.0, defense: 0.9, speed: 1.2 },
-            paladin: { strength: 1.1, defense: 1.2, speed: 0.9 }
-        };
-        return baseSkills[this.class] || baseSkills.warrior;
-    }
-
-    gainXP(amount) {
-        this.xp += amount;
-        let leveledUp = false;
-
-        while (this.xp >= this.xpNeeded) {
-            this.xp -= this.xpNeeded;
-            this.level++;
-            this.xpNeeded = Math.floor(this.xpNeeded * 1.15);
-            leveledUp = true;
-        }
-
-        return leveledUp;
-    }
-
-    gainGold(amount) {
-        this.gold += amount;
-    }
-
-    completeQuest(questId) {
-        if (!this.completedQuests.includes(questId)) {
-            this.completedQuests.push(questId);
-        }
-    }
-
-    getXPPercentage() {
-        return (this.xp / this.xpNeeded) * 100;
-    }
-
-    addBadge(badge) {
-        if (!this.badges.includes(badge)) {
-            this.badges.push(badge);
-        }
-    }
-
-    getHP() {
-        return 100 + (this.level * 10) + (this.skills.defense * 50);
-    }
-
-    getAttackPower() {
-        return 10 + (this.level * 5) + (this.skills.strength * 20);
-    }
-}
-
-// ==================== RAID SYSTEM ====================
-
-class RaidSystem {
-    constructor() {
-        this.raids = [];
-        this.currentRaid = null;
-    }
-
-    createRaid(name, floors, players) {
-        const raid = {
-            id: Date.now(),
-            name: name,
-            totalFloors: parseInt(floors),
-            currentFloor: 1,
-            players: players,
-            status: 'active',
-            rewards: {
-                xp: 50 * parseInt(floors),
-                gold: 75 * parseInt(floors)
-            },
-            createdAt: new Date().toISOString()
-        };
-        this.raids.push(raid);
-        return raid;
-    }
-
-    deleteRaid(raidId) {
-        this.raids = this.raids.filter(r => r.id !== raidId);
-    }
-
-    getRaidById(raidId) {
-        return this.raids.find(r => r.id === raidId);
-    }
-
-    generateFloorEnemy(floor) {
-        const difficulty = Math.floor(floor / 2) + 1;
-        const enemyNames = [
-            'Gobelin avarice', 'Orc gourmandise', 'Zombie procrastination', 'bordélique', 'Troll colère',
-            'la malbouffe', 'Ecran', 'jus', 'injures', 'égo'
-        ];
-        
-        const name = enemyNames[Math.floor(Math.random() * enemyNames.length)];
-        const hp = 30 + (floor * 20) + (difficulty * 15);
-        
-        return {
-            name: `${name} (Étage ${floor})`,
-            hp: hp,
-            maxHp: hp,
-            attackPower: 5 + (floor * 3)
-        };
-    }
-
-    startRaidBattle(raidId) {
-        const raid = this.getRaidById(raidId);
-        if (raid) {
-            this.currentRaid = {
-                ...raid,
-                currentEnemy: this.generateFloorEnemy(raid.currentFloor),
-                playerHPs: raid.players.reduce((acc, p) => {
-                    acc[p.id] = p.getHP();
-                    return acc;
-                }, {})
-            };
-            return this.currentRaid;
-        }
-        return null;
-    }
-
-    playerAttackEnemy(playerId) {
-        if (!this.currentRaid) return null;
-        
-        const player = this.currentRaid.players.find(p => p.id === playerId);
-        if (!player) return null;
-
-        const damage = Math.floor(player.getAttackPower() * (0.8 + Math.random() * 0.4));
-        this.currentRaid.currentEnemy.hp = Math.max(0, this.currentRaid.currentEnemy.hp - damage);
-
-        // Ennemi contre-attaque
-        if (this.currentRaid.currentEnemy.hp > 0) {
-            const allPlayers = this.currentRaid.players;
-            allPlayers.forEach(p => {
-                const enemyDamage = Math.floor(this.currentRaid.currentEnemy.attackPower * (0.5 + Math.random() * 0.5));
-                this.currentRaid.playerHPs[p.id] = Math.max(0, this.currentRaid.playerHPs[p.id] - enemyDamage);
-            });
-        }
-
-        return {
-            damage: damage,
-            enemyHp: this.currentRaid.currentEnemy.hp,
-            playerHPs: this.currentRaid.playerHPs,
-            floorComplete: this.currentRaid.currentEnemy.hp <= 0
-        };
-    }
-
-    healTeam(playerId) {
-        if (!this.currentRaid) return null;
-
-        const player = this.currentRaid.players.find(p => p.id === playerId);
-        if (!player) return null;
-
-        const healAmount = player.getAttackPower();
-        this.currentRaid.players.forEach(p => {
-            const maxHp = p.getHP();
-            this.currentRaid.playerHPs[p.id] = Math.min(maxHp, this.currentRaid.playerHPs[p.id] + healAmount);
-        });
-
-        return this.currentRaid.playerHPs;
-    }
-
-    completeFloor() {
-        if (this.currentRaid && this.currentRaid.currentFloor < this.currentRaid.totalFloors) {
-            this.currentRaid.currentFloor++;
-            this.currentRaid.currentEnemy = this.generateFloorEnemy(this.currentRaid.currentFloor);
-            return true;
-        } else if (this.currentRaid && this.currentRaid.currentFloor === this.currentRaid.totalFloors) {
-            this.currentRaid.status = 'completed';
-            return true;
-        }
-        return false;
-    }
-
-    isTeamDefeated() {
-        return Object.values(this.currentRaid.playerHPs).every(hp => hp <= 0);
-    }
-}
-
-// ==================== ACHIEVEMENTS ====================
 
 const ACHIEVEMENTS = [
-    { id: 'first_quest', icon: '📜', name: 'Première Quête', description: 'Complétez votre première quête', condition: (p) => p.completedQuests.length >= 1 },
-    { id: 'quest_master', icon: '🎯', name: 'Maître des Quêtes', description: 'Complétez 10 quêtes', condition: (p) => p.completedQuests.length >= 10 },
-    { id: 'level_5', icon: '⬆️', name: 'Niveau 5', description: 'Atteignez le niveau 5', condition: (p) => p.level >= 5 },
-    { id: 'level_10', icon: '⬆️⬆️', name: 'Niveau 10', description: 'Atteignez le niveau 10', condition: (p) => p.level >= 10 },
-    { id: 'level_25', icon: '👑', name: 'Roi du Combat', description: 'Atteignez le niveau 25', condition: (p) => p.level >= 25 },
-    { id: 'gold_farmer', icon: '💰', name: 'Collecteur d\'Or', description: 'Gagnez 500 pièces d\'or', condition: (p) => p.gold >= 500 },
-    { id: 'rich', icon: '💎', name: 'Riche', description: 'Gagnez 2000 pièces d\'or', condition: (p) => p.gold >= 2000 },
-    { id: 'hard_worker', icon: '💪', name: 'Travailleur Acharné', description: 'Complétez 50 quêtes', condition: (p) => p.completedQuests.length >= 50 },
-    { id: 'speedrunner', icon: '⚡', name: 'Rapidité', description: 'Complétez 5 quêtes SSS', condition: (p) => p.completedQuests.filter(q => q.includes('annual')).length >= 5 }
+  { id: 'first_quest', icon: '📜', name: 'Première quête', description: 'Compléter une quête', condition: p => p.completedQuests.length >= 1 },
+  { id: 'quest_master', icon: '🎯', name: 'Maître des quêtes', description: 'Compléter 10 quêtes', condition: p => p.completedQuests.length >= 10 },
+  { id: 'level_5', icon: '⬆️', name: 'Niveau 5', description: 'Atteindre le niveau 5', condition: p => p.level >= 5 },
+  { id: 'level_10', icon: '⬆️⬆️', name: 'Niveau 10', description: 'Atteindre le niveau 10', condition: p => p.level >= 10 },
+  { id: 'level_25', icon: '👑', name: 'Roi du combat', description: 'Atteindre le niveau 25', condition: p => p.level >= 25 },
+  { id: 'gold_farmer', icon: '💰', name: 'Collecteur d’or', description: 'Gagner 500 pièces', condition: p => p.gold >= 500 },
+  { id: 'rich', icon: '💎', name: 'Riche', description: 'Gagner 2000 pièces', condition: p => p.gold >= 2000 },
+  { id: 'hard_worker', icon: '💪', name: 'Travailleur acharné', description: 'Compléter 50 quêtes', condition: p => p.completedQuests.length >= 50 }
 ];
 
-// ==================== SOUND SYSTEM ====================
+// ==================== HELPERS ====================
 
-class SoundSystem {
-    constructor() {
-        this.bgm = document.getElementById('bgm');
-        this.soundEffect = document.getElementById('soundEffect');
-        this.enabled = true;
-    }
+const $ = (id) => document.getElementById(id);
 
-    playBGM() {
-        if (this.enabled && this.bgm) {
-            this.bgm.play().catch(() => {});
-        }
-    }
+const safeJsonParse = (value, fallback) => {
+  try { return value ? JSON.parse(value) : fallback; } catch { return fallback; }
+};
 
-    stopBGM() {
-        if (this.bgm) {
-            this.bgm.pause();
-        }
-    }
+const pad2 = (value) => String(value).padStart(2, '0');
 
-    playSound(soundName) {
-        if (!this.enabled) return;
-        
-        const soundMap = {
-            'quest_complete': 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==',
-            'level_up': 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==',
-            'xp_gain': 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==',
-            'click': 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=='
-        };
+const escapeHtml = (text) => String(text)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#039;');
 
-        if (this.soundEffect && soundMap[soundName]) {
-            this.soundEffect.src = soundMap[soundName];
-            this.soundEffect.play().catch(() => {});
-        }
-    }
+const slugify = (text) => String(text)
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/[^a-z0-9]+/g, '_')
+  .replace(/^_|_$/g, '');
 
-    toggle() {
-        this.enabled = !this.enabled;
-        if (this.enabled) {
-            this.playBGM();
-        } else {
-            this.stopBGM();
-        }
-    }
-}
+const uid = (prefix = 'id') => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-// ==================== UI ANIMATIONS ====================
+const monthKey = (date = new Date()) => `${date.getFullYear()}-${pad2(date.getMonth() + 1)}`;
+const dateKey = (date = new Date()) => `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
 
-function createConfetti() {
-    const confettiContainer = document.getElementById('confetti');
-    confettiContainer.innerHTML = '';
-
-    for (let i = 0; i < 50; i++) {
-        const piece = document.createElement('div');
-        piece.className = 'confetti-piece';
-        piece.style.left = Math.random() * 100 + '%';
-        piece.style.backgroundColor = ['#667eea', '#764ba2', '#48bb78', '#f39c12', '#e74c3c'][Math.floor(Math.random() * 5)];
-        piece.style.setProperty('--x', (Math.random() - 0.5) * 200 + 'px');
-        piece.style.setProperty('--rotation', Math.random() * 360 + 'deg');
-        
-        confettiContainer.appendChild(piece);
-        
-        setTimeout(() => piece.remove(), 3000);
-    }
-}
-
-function showXPNotification(xp, x, y) {
-    const notif = document.getElementById('xpNotification');
-    notif.textContent = `+${xp} XP`;
-    notif.style.left = x + 'px';
-    notif.style.top = y + 'px';
-    notif.classList.add('xp-float');
-    
-    setTimeout(() => notif.classList.remove('xp-float'), 1500);
-}
-
-function showDamageNotification(damage, x, y) {
-    const notif = document.getElementById('damageNotification');
-    notif.textContent = `-${damage} HP`;
-    notif.style.left = x + 'px';
-    notif.style.top = y + 'px';
-    notif.classList.add('damage-float');
-    
-    setTimeout(() => notif.classList.remove('damage-float'), 1500);
-}
-
-// ==================== GLOBAL INSTANCES ====================
-
-const gameData = new GameData();
-const questSystem = new QuestSystem();
-const raidSystem = new RaidSystem();
-const soundSystem = new SoundSystem();
-
-// ==================== UI FUNCTIONS ====================
-
-function getCurrentSeason() {
-    const month = new Date().getMonth() + 1;
-    for (const [season, config] of Object.entries(GAME_CONFIG.seasons)) {
-        if (config.months.includes(month)) {
-            return config;
-        }
-    }
-    return GAME_CONFIG.seasons.spring;
+function getISOWeekKey(date = new Date()) {
+  const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = tmp.getUTCDay() || 7;
+  tmp.setUTCDate(tmp.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
+  return `${tmp.getUTCFullYear()}-W${pad2(weekNo)}`;
 }
 
 function formatDate(date = new Date()) {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('fr-FR', options);
+  return date.toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 }
 
-function updateHeader() {
-    document.getElementById('currentDate').textContent = formatDate();
-    
-    const season = getCurrentSeason();
-    document.getElementById('currentSeason').textContent = `${season.emoji} ${season.name}`;
-    
-    const specialEvent = questSystem.getSpecialEventToday();
-    const eventText = specialEvent ? `${specialEvent.emoji} ${specialEvent.name}` : 'Aucun';
-    document.getElementById('specialEvent').textContent = eventText;
+function getCurrentSeason() {
+  const month = new Date().getMonth() + 1;
+  return Object.values(GAME_CONFIG.seasons).find(season => season.months.includes(month)) || GAME_CONFIG.seasons.spring;
 }
 
-function openAddPlayerModal() {
-    document.getElementById('addPlayerModal').classList.add('show');
+function matchesHoliday(holiday, date = new Date()) {
+  const key = `${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+
+  if (holiday.type === 'date') {
+    return holiday.date === key;
+  }
+
+  if (holiday.type === 'range') {
+    return date.getMonth() + 1 === holiday.month && date.getDate() >= holiday.startDay && date.getDate() <= holiday.endDay;
+  }
+
+  return false;
 }
 
-function closeAddPlayerModal() {
-    document.getElementById('addPlayerModal').classList.remove('show');
-    document.getElementById('newPlayerName').value = '';
+function seedFromString(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = ((h << 5) - h) + str.charCodeAt(i);
+    h |= 0;
+  }
+  return Math.abs(h);
+}
+
+function pickDeterministic(array, seed) {
+  if (!array.length) return null;
+  return array[seed % array.length];
+}
+
+function uniqById(items) {
+  return [...new Map(items.map(item => [item.id, item])).values()];
+}
+
+function createConfetti() {
+  const zone = $('confetti');
+  if (!zone) return;
+
+  zone.innerHTML = '';
+  for (let i = 0; i < 40; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = Math.random() * 100 + '%';
+    el.style.setProperty('--x', (Math.random() - 0.5) * 200 + 'px');
+    el.style.setProperty('--rotation', Math.random() * 360 + 'deg');
+    zone.appendChild(el);
+    setTimeout(() => el.remove(), 2800);
+  }
+}
+
+// ==================== MODELS ====================
+
+class Player {
+  constructor(id, name, playerClass, data = {}) {
+    this.id = id;
+    this.name = name;
+    this.class = playerClass;
+    this.level = data.level ?? 1;
+    this.xp = data.xp ?? 0;
+    this.xpNeeded = data.xpNeeded ?? GAME_CONFIG.leveling.baseXP;
+    this.gold = data.gold ?? 0;
+    this.completedQuests = Array.isArray(data.completedQuests) ? data.completedQuests : [];
+    this.skills = data.skills || this.initializeSkills();
+    this.badges = Array.isArray(data.badges) ? data.badges : [];
+    this.createdAt = data.createdAt || new Date().toISOString();
+  }
+
+  static fromJSON(data) {
+    return new Player(data.id, data.name, data.class, data);
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      class: this.class,
+      level: this.level,
+      xp: this.xp,
+      xpNeeded: this.xpNeeded,
+      gold: this.gold,
+      completedQuests: this.completedQuests,
+      skills: this.skills,
+      badges: this.badges,
+      createdAt: this.createdAt
+    };
+  }
+
+  initializeSkills() {
+    const baseSkills = {
+      warrior: { strength: 1.2, defense: 1.0, speed: 0.8 },
+      mage: { strength: 0.8, defense: 0.8, speed: 1.1 },
+      archer: { strength: 1.0, defense: 0.9, speed: 1.2 },
+      paladin: { strength: 1.1, defense: 1.2, speed: 0.9 }
+    };
+    return baseSkills[this.class] || baseSkills.warrior;
+  }
+
+  gainXP(amount) {
+    this.xp += amount;
+    let leveledUp = 0;
+
+    while (this.xp >= this.xpNeeded) {
+      this.xp -= this.xpNeeded;
+      this.level += 1;
+      this.xpNeeded = Math.floor(GAME_CONFIG.leveling.baseXP * Math.pow(GAME_CONFIG.leveling.growth, this.level - 1));
+      leveledUp += 1;
+    }
+
+    return leveledUp;
+  }
+
+  gainGold(amount) {
+    this.gold += amount;
+  }
+
+  completeQuest(questId) {
+    if (!this.completedQuests.includes(questId)) {
+      this.completedQuests.push(questId);
+    }
+  }
+
+  addBadge(badgeId) {
+    if (!this.badges.includes(badgeId)) {
+      this.badges.push(badgeId);
+    }
+  }
+
+  getXPPercentage() {
+    return Math.max(0, Math.min(100, (this.xp / this.xpNeeded) * 100));
+  }
+
+  getHP() {
+    return 100 + (this.level * 10) + (this.skills.defense * 50);
+  }
+
+  getAttackPower() {
+    return 10 + (this.level * 5) + (this.skills.strength * 20);
+  }
+}
+
+class QuestSystem {
+  constructor() {
+    this.quests = new Map();
+    this.refresh();
+  }
+
+  refresh(now = new Date()) {
+    const active = this.generateActiveQuests(now);
+    const existing = GameData.instance ? GameData.instance.quests : {};
+    this.quests = new Map(active.map(q => {
+      const saved = existing[q.id];
+      return [q.id, saved ? { ...q, ...saved } : q];
+    }));
+    return this.quests;
+  }
+
+  generateActiveQuests(now = new Date()) {
+    const list = [];
+    list.push(...this.generateDailyQuests(now));
+    list.push(this.generateWeeklyQuest(now));
+    list.push(this.generateMonthlyQuest(now));
+    list.push(this.generateAnnualQuest(now));
+    list.push(...this.generateSpecialQuests(now));
+    return uniqById(list.filter(Boolean));
+  }
+
+  generateDailyQuests(now = new Date()) {
+    const daySeedBase = dateKey(now);
+    const counts = { E: 5, D: 4, C: 3, B: 2, A: 1 };
+
+    return Object.entries(counts).flatMap(([rarity, count]) => {
+      const pool = QUEST_POOLS.daily[rarity];
+      return Array.from({ length: count }, (_, index) => {
+        const seed = seedFromString(`${daySeedBase}-${rarity}-${index}`);
+        const title = pickDeterministic(pool, seed);
+        const rarityInfo = GAME_CONFIG.questRarities[rarity];
+
+        return {
+          id: `daily_${daySeedBase}_${rarity}_${index}`,
+          type: 'daily',
+          rarity,
+          title,
+          description: 'Quête quotidienne générée automatiquement.',
+          xp: rarityInfo.xp,
+          gold: Math.floor(rarityInfo.xp * 1.5),
+          completed: false,
+          completedAt: null
+        };
+      });
+    });
+  }
+
+  generateWeeklyQuest(now = new Date()) {
+    const week = getISOWeekKey(now);
+    const seed = seedFromString(week);
+    const quest = pickDeterministic(QUEST_POOLS.weekly, seed);
+
+    return {
+      id: `weekly_${week}`,
+      type: 'weekly',
+      rarity: 'S',
+      title: quest.title,
+      description: quest.description,
+      xp: GAME_CONFIG.questRarities.S.xp,
+      gold: 90,
+      completed: false,
+      completedAt: null
+    };
+  }
+
+  generateMonthlyQuest(now = new Date()) {
+    const key = monthKey(now);
+    const seed = seedFromString(key);
+    const quest = pickDeterministic(QUEST_POOLS.monthly, seed);
+
+    return {
+      id: `monthly_${key}`,
+      type: 'monthly',
+      rarity: 'SS',
+      title: quest.title,
+      description: quest.description,
+      xp: GAME_CONFIG.questRarities.SS.xp,
+      gold: 120,
+      completed: false,
+      completedAt: null
+    };
+  }
+
+  generateAnnualQuest(now = new Date()) {
+    const year = now.getFullYear();
+    const seed = seedFromString(String(year));
+    const quest = pickDeterministic(QUEST_POOLS.annual, seed);
+
+    return {
+      id: `annual_${year}`,
+      type: 'annual',
+      rarity: 'SSS',
+      title: quest.title,
+      description: quest.description,
+      xp: GAME_CONFIG.questRarities.SSS.xp,
+      gold: 200,
+      completed: false,
+      completedAt: null
+    };
+  }
+
+  generateSpecialQuests(now = new Date()) {
+    const all = [
+      ...GAME_CONFIG.internationalHolidays,
+      ...GAME_CONFIG.madagascarHolidays,
+      ...GAME_CONFIG.japanHolidays
+    ];
+
+    return all.filter(h => matchesHoliday(h, now)).map(holiday => ({
+      id: `special_${slugify(holiday.name)}_${dateKey(now)}`,
+      type: 'special',
+      rarity: 'A',
+      title: `${holiday.emoji} ${holiday.name}`,
+      description: `Participez à la célébration de ${holiday.name}.`,
+      xp: 50,
+      gold: 75,
+      completed: false,
+      completedAt: null
+    }));
+  }
+
+  getQuest(questId) {
+    return this.quests.get(questId);
+  }
+
+  getQuestList(type = 'all') {
+    const values = Array.from(this.quests.values());
+    return type === 'all' ? values : values.filter(q => q.type === type);
+  }
+
+  getSpecialEventsToday(now = new Date()) {
+    return [
+      ...GAME_CONFIG.internationalHolidays,
+      ...GAME_CONFIG.madagascarHolidays,
+      ...GAME_CONFIG.japanHolidays
+    ].filter(h => matchesHoliday(h, now));
+  }
+}
+
+class GameData {
+  static instance = null;
+
+  constructor() {
+    GameData.instance = this;
+    this.load();
+  }
+
+  load() {
+    const data = safeJsonParse(localStorage.getItem('rpg_game_data'), null) || {};
+
+    this.players = {};
+    Object.entries(data.players || {}).forEach(([id, playerData]) => {
+      this.players[id] = Player.fromJSON(playerData);
+    });
+
+    this.quests = data.quests || {};
+    this.achievements = data.achievements || {};
+    this.calendar = data.calendar || {};
+    this.soundEnabled = data.soundEnabled !== false;
+  }
+
+  save() {
+    const data = {
+      players: Object.fromEntries(Object.entries(this.players).map(([id, p]) => [id, p.toJSON()])),
+      quests: this.quests,
+      achievements: this.achievements,
+      calendar: this.calendar,
+      soundEnabled: this.soundEnabled
+    };
+    localStorage.setItem('rpg_game_data', JSON.stringify(data));
+  }
+
+  reset() {
+    localStorage.removeItem('rpg_game_data');
+    this.load();
+  }
+}
+
+class SoundSystem {
+  constructor() {
+    this.enabled = true;
+    this.bgm = $('bgm');
+    this.soundEffect = $('soundEffect');
+  }
+
+  syncFromData(enabled) {
+    this.enabled = enabled;
+  }
+
+  playBGM() {
+    if (this.enabled && this.bgm) {
+      this.bgm.play().catch(() => {});
+    }
+  }
+
+  stopBGM() {
+    if (this.bgm) {
+      this.bgm.pause();
+    }
+  }
+
+  playSound() {
+    if (!this.enabled || !this.soundEffect) return;
+    this.soundEffect.currentTime = 0;
+    this.soundEffect.play().catch(() => {});
+  }
+
+  toggle() {
+    this.enabled = !this.enabled;
+    if (this.enabled) {
+      this.playBGM();
+    } else {
+      this.stopBGM();
+    }
+    return this.enabled;
+  }
+}
+
+// ==================== STATE ====================
+
+const gameData = new GameData();
+const questSystem = new QuestSystem();
+const soundSystem = new SoundSystem();
+let currentCalendarDate = new Date();
+let activeQuestFilter = 'all';
+
+// merge quest data on startup
+questSystem.quests.forEach((quest, id) => {
+  if (!gameData.quests[id]) {
+    gameData.quests[id] = quest;
+  }
+});
+gameData.save();
+
+// ==================== PLAYER / QUEST ACTIONS ====================
+
+function updateAchievements(player) {
+  ACHIEVEMENTS.forEach(achievement => {
+    if (achievement.condition(player) && !player.badges.includes(achievement.id)) {
+      player.addBadge(achievement.id);
+    }
+  });
 }
 
 function addPlayer() {
-    const name = document.getElementById('newPlayerName').value.trim();
-    const playerClass = document.getElementById('newPlayerClass').value;
+  const nameInput = $('newPlayerName');
+  const classInput = $('newPlayerClass');
+  const name = nameInput ? nameInput.value.trim() : '';
+  const playerClass = classInput ? classInput.value : 'warrior';
 
-    if (!name) {
-        alert('Veuillez entrer un nom de joueur');
-        return;
-    }
+  if (!name) {
+    alert('Veuillez entrer un nom de joueur');
+    return;
+  }
 
-    const playerId = Date.now().toString();
-    const player = new Player(playerId, name, playerClass);
-    gameData.players[playerId] = player;
-    gameData.save();
+  const playerId = uid('player');
+  gameData.players[playerId] = new Player(playerId, name, playerClass);
+  gameData.save();
 
-    closeAddPlayerModal();
-    renderPlayers();
-    soundSystem.playSound('click');
+  if (nameInput) {
+    nameInput.value = '';
+  }
+
+  closeAddPlayerModal();
+  renderAll();
+  soundSystem.playSound();
 }
 
 function deletePlayer(playerId) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce joueur ?')) {
-        delete gameData.players[playerId];
-        gameData.save();
-        renderPlayers();
-    }
-}
-
-function openPlayerDetailsModal(playerId) {
-    const player = gameData.players[playerId];
-    if (!player) return;
-
-    const content = document.getElementById('playerDetailsContent');
-    const achievements = ACHIEVEMENTS.filter(a => a.condition(player));
-
-    content.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div>
-                <h2>${GAME_CONFIG.classesInfo[player.class].emoji} ${player.name}</h2>
-                <p style="color: #718096;">Classe: ${GAME_CONFIG.classesInfo[player.class].name}</p>
-            </div>
-            <button class="btn-secondary" onclick="deletePlayer('${playerId}'); closePlayerDetailsModal();">Supprimer</button>
-        </div>
-
-        <div class="player-stats">
-            <div class="stat-row">
-                <span class="stat-label">Niveau:</span>
-                <span class="stat-value">${player.level}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">XP Totale:</span>
-                <span class="stat-value">${player.xp}/${player.xpNeeded}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Or:</span>
-                <span class="stat-value">💰 ${player.gold}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Quêtes complétées:</span>
-                <span class="stat-value">${player.completedQuests.length}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Badges:</span>
-                <span class="stat-value">${player.badges.length}</span>
-            </div>
-        </div>
-
-        <div class="xp-container">
-            <div class="xp-label">
-                <span>Progression:</span>
-                <span>${Math.round(player.getXPPercentage())}%</span>
-            </div>
-            <div class="xp-bar">
-                <div class="xp-fill" style="width: ${player.getXPPercentage()}%">
-                    <div class="xp-text">${player.xp}/${player.xpNeeded}</div>
-                </div>
-            </div>
-        </div>
-
-        <h3 style="margin-top: 25px; margin-bottom: 15px;">🏆 Réalisations (${achievements.length}/${ACHIEVEMENTS.length})</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            ${achievements.map(a => `
-                <div style="background: #fef5e7; padding: 10px; border-radius: 8px; text-align: center;">
-                    <div style="font-size: 1.5em; margin-bottom: 5px;">${a.icon}</div>
-                    <div style="font-weight: 600; color: #2c3e50; font-size: 0.9em;">${a.name}</div>
-                </div>
-            `).join('')}
-        </div>
-
-        <h3 style="margin-top: 25px; margin-bottom: 15px;">⚔️ Compétences</h3>
-        <div class="player-stats">
-            <div class="stat-row">
-                <span class="stat-label">Force:</span>
-                <span class="stat-value">${(player.skills.strength * 100).toFixed(0)}%</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Défense:</span>
-                <span class="stat-value">${(player.skills.defense * 100).toFixed(0)}%</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Vitesse:</span>
-                <span class="stat-value">${(player.skills.speed * 100).toFixed(0)}%</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">HP Totals:</span>
-                <span class="stat-value">${Math.floor(player.getHP())}</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">Puissance d\'attaque:</span>
-                <span class="stat-value">${Math.floor(player.getAttackPower())}</span>
-            </div>
-        </div>
-    `;
-
-    document.getElementById('playerDetailsModal').classList.add('show');
-}
-
-function closePlayerDetailsModal() {
-    document.getElementById('playerDetailsModal').classList.remove('show');
-}
-
-function renderPlayers() {
-    const playersList = document.getElementById('playersList');
-    playersList.innerHTML = '';
-
-    Object.values(gameData.players).forEach(player => {
-        const classInfo = GAME_CONFIG.classesInfo[player.class];
-        const xpPercent = player.getXPPercentage();
-
-        const playerCard = document.createElement('div');
-        playerCard.className = 'player-card';
-        playerCard.style.cursor = 'pointer';
-        playerCard.onclick = () => openPlayerDetailsModal(player.id);
-
-        playerCard.innerHTML = `
-            <div class="player-header">
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <div class="player-avatar player-class-${player.class}">
-                        ${classInfo.emoji}
-                    </div>
-                    <div class="player-info">
-                        <h3>${player.name}</h3>
-                        <p class="player-class">${classInfo.name}</p>
-                        ${player.level >= 10 ? `<div class="player-badge">⭐ Niveau ${player.level}</div>` : ''}
-                    </div>
-                </div>
-            </div>
-
-            <div class="player-stats">
-                <div class="stat-row">
-                    <span class="stat-label">Niveau:</span>
-                    <span class="stat-value">${player.level}</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Quêtes:</span>
-                    <span class="stat-value">${player.completedQuests.length}</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Or:</span>
-                    <span class="stat-value">💰 ${player.gold}</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Badges:</span>
-                    <span class="stat-value">${player.badges.length}🎖️</span>
-                </div>
-            </div>
-
-            <div class="xp-container">
-                <div class="xp-label">
-                    <span>XP:</span>
-                    <span>${Math.round(xpPercent)}%</span>
-                </div>
-                <div class="xp-bar">
-                    <div class="xp-fill" style="width: ${xpPercent}%">
-                        <div class="xp-text">${player.xp}/${player.xpNeeded}</div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        playersList.appendChild(playerCard);
-    });
-
-    if (Object.keys(gameData.players).length === 0) {
-        playersList.innerHTML = '<p style="text-align: center; color: #718096; grid-column: 1/-1;">Aucun joueur. Créez-en un pour commencer !</p>';
-    }
+  if (!confirm('Êtes-vous sûr de vouloir supprimer ce joueur ?')) return;
+  delete gameData.players[playerId];
+  gameData.save();
+  renderAll();
 }
 
 function completeQuest(questId) {
-    if (!Object.keys(gameData.players).length) {
-        alert('Veuillez créer un joueur d\'abord');
-        return;
-    }
+  if (!Object.keys(gameData.players).length) {
+    alert('Veuillez créer un joueur d’abord');
+    return;
+  }
 
-    const modal = document.createElement('div');
-    modal.className = 'modal show';
-    modal.style.zIndex = '2001';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
-            <h2>Sélectionner un joueur</h2>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                ${Object.values(gameData.players).map(p => `
-                    <button class="btn-primary" style="width: 100%; text-align: left;" onclick="
-                        completeQuestForPlayer('${questId}', '${p.id}');
-                        this.parentElement.parentElement.parentElement.remove();
-                    ">
-                        ${GAME_CONFIG.classesInfo[p.class].emoji} ${p.name} (Niveau ${p.level})
-                    </button>
-                `).join('')}
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
+  const quest = questSystem.getQuest(questId) || gameData.quests[questId];
+  if (!quest || quest.completed) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal show';
+  modal.style.zIndex = '2001';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+      <h2>Sélectionner un joueur</h2>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        ${Object.values(gameData.players).map(player => `
+          <button class="btn-primary" style="width:100%;text-align:left;" onclick="completeQuestForPlayer('${questId}','${player.id}'); this.closest('.modal').remove();">
+            ${GAME_CONFIG.classesInfo[player.class].emoji} ${escapeHtml(player.name)} (Niveau ${player.level})
+          </button>
+        `).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
 }
 
 function completeQuestForPlayer(questId, playerId) {
-    const player = gameData.players[playerId];
-    const quest = questSystem.quests.get(questId);
+  const player = gameData.players[playerId];
+  const quest = questSystem.getQuest(questId) || gameData.quests[questId];
+  if (!player || !quest || quest.completed) return;
 
-    if (!player || !quest || quest.completed) return;
+  const leveledUp = player.gainXP(quest.xp);
+  player.gainGold(quest.gold);
+  player.completeQuest(questId);
+  updateAchievements(player);
 
-    quest.completed = true;
-    quest.completedAt = new Date().toISOString();
-    player.completeQuest(questId);
-    player.gainXP(quest.xp);
-    player.gainGold(quest.gold);
+  quest.completed = true;
+  quest.completedAt = new Date().toISOString();
+  gameData.quests[questId] = quest;
+  gameData.save();
 
-    const leveledUp = player.gainXP(0);
-    if (leveledUp) {
-        createConfetti();
-        document.querySelector('.player-card')?.classList.add('level-up-pulse');
-        soundSystem.playSound('level_up');
-    }
+  if (leveledUp > 0) {
+    createConfetti();
+  }
 
-    // Vérifier les réalisations
-    updateAchievements(player);
-
-    gameData.save();
-    renderQuests();
-    renderPlayers();
-    renderAchievements();
-    soundSystem.playSound('quest_complete');
+  renderAll();
+  soundSystem.playSound();
 }
 
-function updateAchievements(player) {
-    ACHIEVEMENTS.forEach(achievement => {
-        if (achievement.condition(player) && !player.badges.includes(achievement.id)) {
-            player.addBadge(achievement.id);
-        }
-    });
+function updatePlayerBadges() {
+  Object.values(gameData.players).forEach(player => updateAchievements(player));
+}
+
+// ==================== RENDERERS ====================
+
+function updateHeader() {
+  const dateEl = $('currentDate');
+  const seasonEl = $('currentSeason');
+  const eventEl = $('specialEvent');
+
+  if (dateEl) {
+    dateEl.textContent = formatDate();
+  }
+
+  if (seasonEl) {
+    const season = getCurrentSeason();
+    seasonEl.textContent = `${season.emoji} ${season.name}`;
+  }
+
+  if (eventEl) {
+    const events = questSystem.getSpecialEventsToday();
+    eventEl.textContent = events.length ? events.map(e => `${e.emoji} ${e.name}`).join(' • ') : 'Aucun';
+  }
+}
+
+function renderPlayers() {
+  const list = $('playersList');
+  if (!list) return;
+
+  list.innerHTML = '';
+  const players = Object.values(gameData.players);
+
+  if (!players.length) {
+    list.innerHTML = '<p style="text-align:center;color:#718096;grid-column:1/-1;">Aucun joueur. Créez-en un pour commencer !</p>';
+    return;
+  }
+
+  players.forEach(player => {
+    const classInfo = GAME_CONFIG.classesInfo[player.class];
+    const card = document.createElement('div');
+    card.className = 'player-card';
+    card.style.cursor = 'pointer';
+    card.onclick = () => openPlayerDetailsModal(player.id);
+
+    const xp = player.getXPPercentage();
+
+    card.innerHTML = `
+      <div class="player-header">
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div class="player-avatar player-class-${player.class}">${classInfo.emoji}</div>
+          <div class="player-info">
+            <h3>${escapeHtml(player.name)}</h3>
+            <p class="player-class">${classInfo.name}</p>
+            ${player.level >= 10 ? `<div class="player-badge">⭐ Niveau ${player.level}</div>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="player-stats">
+        <div class="stat-row"><span class="stat-label">Niveau:</span><span class="stat-value">${player.level}</span></div>
+        <div class="stat-row"><span class="stat-label">Quêtes:</span><span class="stat-value">${player.completedQuests.length}</span></div>
+        <div class="stat-row"><span class="stat-label">Or:</span><span class="stat-value">💰 ${player.gold}</span></div>
+        <div class="stat-row"><span class="stat-label">Badges:</span><span class="stat-value">${player.badges.length}🎖️</span></div>
+      </div>
+
+      <div class="xp-container">
+        <div class="xp-label"><span>XP:</span><span>${Math.round(xp)}%</span></div>
+        <div class="xp-bar">
+          <div class="xp-fill" style="width:${xp}%">
+            <div class="xp-text">${player.xp}/${player.xpNeeded}</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+}
+
+function openPlayerDetailsModal(playerId) {
+  const player = gameData.players[playerId];
+  if (!player) return;
+
+  const modal = $('playerDetailsModal');
+  const content = $('playerDetailsContent');
+  if (!modal || !content) return;
+
+  const achievements = ACHIEVEMENTS.filter(a => a.condition(player));
+
+  content.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div>
+        <h2>${GAME_CONFIG.classesInfo[player.class].emoji} ${escapeHtml(player.name)}</h2>
+        <p style="color:#718096;">Classe: ${GAME_CONFIG.classesInfo[player.class].name}</p>
+      </div>
+      <button class="btn-secondary" onclick="deletePlayer('${playerId}'); closePlayerDetailsModal();">Supprimer</button>
+    </div>
+
+    <div class="player-stats">
+      <div class="stat-row"><span class="stat-label">Niveau:</span><span class="stat-value">${player.level}</span></div>
+      <div class="stat-row"><span class="stat-label">XP:</span><span class="stat-value">${player.xp}/${player.xpNeeded}</span></div>
+      <div class="stat-row"><span class="stat-label">Or:</span><span class="stat-value">💰 ${player.gold}</span></div>
+      <div class="stat-row"><span class="stat-label">Quêtes complétées:</span><span class="stat-value">${player.completedQuests.length}</span></div>
+      <div class="stat-row"><span class="stat-label">Badges:</span><span class="stat-value">${player.badges.length}</span></div>
+      <div class="stat-row"><span class="stat-label">HP total:</span><span class="stat-value">${Math.floor(player.getHP())}</span></div>
+      <div class="stat-row"><span class="stat-label">Attaque:</span><span class="stat-value">${Math.floor(player.getAttackPower())}</span></div>
+    </div>
+
+    <div class="xp-container">
+      <div class="xp-label"><span>Progression:</span><span>${Math.round(player.getXPPercentage())}%</span></div>
+      <div class="xp-bar">
+        <div class="xp-fill" style="width:${player.getXPPercentage()}%">
+          <div class="xp-text">${player.xp}/${player.xpNeeded}</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:25px;margin-bottom:15px;">🏆 Réalisations (${achievements.length}/${ACHIEVEMENTS.length})</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      ${achievements.map(a => `
+        <div style="background:#fef5e7;padding:10px;border-radius:8px;text-align:center;">
+          <div style="font-size:1.5em;margin-bottom:5px;">${a.icon}</div>
+          <div style="font-weight:600;color:#2c3e50;font-size:0.9em;">${a.name}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  modal.classList.add('show');
+}
+
+function closePlayerDetailsModal() {
+  $('playerDetailsModal')?.classList.remove('show');
 }
 
 function renderQuests(filter = 'all') {
-    const questsList = document.getElementById('questsList');
-    questsList.innerHTML = '';
+  activeQuestFilter = filter;
+  const list = $('questsList');
+  if (!list) return;
 
-    let quests = Array.from(questSystem.quests.values());
+  list.innerHTML = '';
+  const quests = questSystem.getQuestList(filter).sort((a, b) => a.type.localeCompare(b.type) || a.rarity.localeCompare(b.rarity));
 
-    if (filter !== 'all') {
-        quests = quests.filter(q => q.type === filter);
-    }
+  if (!quests.length) {
+    list.innerHTML = '<p style="text-align:center;color:#718096;grid-column:1/-1;">Aucune quête disponible pour ce filtre.</p>';
+    return;
+  }
 
-    quests.forEach(quest => {
-        const rarity = GAME_CONFIG.questRarities[quest.rarity];
-        const isCompleted = quest.completed;
+  quests.forEach(quest => {
+    const rarity = GAME_CONFIG.questRarities[quest.rarity];
+    const card = document.createElement('div');
+    card.className = `quest-card ${quest.completed ? 'completed' : ''} rarity-${quest.rarity.toLowerCase()}`;
+    const stars = '⭐'.repeat(quest.rarity === 'E' || quest.rarity === 'D' ? 1 : quest.rarity === 'C' || quest.rarity === 'B' ? 2 : 3);
 
-        const questCard = document.createElement('div');
-        questCard.className = `quest-card ${isCompleted ? 'completed' : ''} rarity-${quest.rarity.toLowerCase()}`;
-        
-        const difficultyStars = '⭐'.repeat(['E', 'D'].includes(quest.rarity) ? 1 : ['C', 'B'].includes(quest.rarity) ? 2 : 3);
+    card.innerHTML = `
+      <div class="quest-header">
+        <div>
+          <h3 class="quest-title">${quest.title}</h3>
+          <p class="quest-description">${quest.description || ''}</p>
+        </div>
+        <span class="quest-rarity">${quest.rarity}</span>
+      </div>
 
-        questCard.innerHTML = `
-            <div class="quest-header">
-                <div>
-                    <h3 class="quest-title">${quest.emoji || ''} ${quest.title}</h3>
-                    <p class="quest-description">${quest.description || ''}</p>
-                </div>
-                <span class="quest-rarity">${quest.rarity}</span>
-            </div>
+      <div class="quest-rewards">
+        <div class="quest-xp">📊 ${quest.xp} XP</div>
+        <div class="quest-gold">💰 ${quest.gold} Gold</div>
+      </div>
 
-            <div class="quest-rewards">
-                <div class="quest-xp">📊 ${quest.xp} XP</div>
-                <div class="quest-gold">💰 ${quest.gold} Gold</div>
-            </div>
+      <span class="quest-type">${rarity.name}</span>
 
-            <span class="quest-type">${rarity.name}</span>
+      <div class="quest-footer">
+        <div class="quest-difficulty">${stars}</div>
+        <button class="btn-complete" onclick="completeQuest('${quest.id}')" ${quest.completed ? 'disabled' : ''}>
+          ${quest.completed ? '✓ Complétée' : 'Compléter'}
+        </button>
+      </div>
+    `;
 
-            <div class="quest-footer">
-                <div class="quest-difficulty">
-                    ${difficultyStars} ${['E', 'D'].includes(quest.rarity) ? '' : ['C', 'B'].includes(quest.rarity) ? '' : ''}
-                </div>
-                <button class="btn-complete" onclick="completeQuest('${quest.id}')" ${isCompleted ? 'disabled' : ''}>
-                    ${isCompleted ? '✓ Complétée' : 'Compléter'}
-                </button>
-            </div>
-        `;
-
-        questsList.appendChild(questCard);
-    });
+    list.appendChild(card);
+  });
 }
 
 function renderAchievements() {
-    const achievementsList = document.getElementById('achievementsList');
-    achievementsList.innerHTML = '';
+  const list = $('achievementsList');
+  if (!list) return;
 
-    ACHIEVEMENTS.forEach(achievement => {
-        const unlockedByPlayers = Object.values(gameData.players).filter(p => p.badges.includes(achievement.id));
-        const unlocked = unlockedByPlayers.length > 0;
+  list.innerHTML = '';
 
-        const card = document.createElement('div');
-        card.className = `achievement-card ${unlocked ? 'unlocked' : 'locked'}`;
-        
-        card.innerHTML = `
-            <div class="achievement-icon">${achievement.icon}</div>
-            <h3>${achievement.name}</h3>
-            <p>${achievement.description}</p>
-            <div class="achievement-progress">
-                ${unlocked ? `Débloquée par ${unlockedByPlayers.length} joueur(s)` : 'Non débloquée'}
-            </div>
-        `;
+  ACHIEVEMENTS.forEach(achievement => {
+    const unlockedPlayers = Object.values(gameData.players).filter(p => p.badges.includes(achievement.id));
+    const unlocked = unlockedPlayers.length > 0;
 
-        achievementsList.appendChild(card);
-    });
+    const card = document.createElement('div');
+    card.className = `achievement-card ${unlocked ? 'unlocked' : 'locked'}`;
+    card.innerHTML = `
+      <div class="achievement-icon">${achievement.icon}</div>
+      <h3>${achievement.name}</h3>
+      <p>${achievement.description}</p>
+      <div class="achievement-progress">
+        ${unlocked ? `Débloquée par ${unlockedPlayers.length} joueur(s)` : 'Non débloquée'}
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
 }
 
 function renderCalendar() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
+  const view = $('calendarView');
+  const monthLabel = $('calendarMonth');
+  if (!view || !monthLabel) return;
 
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
+  const year = currentCalendarDate.getFullYear();
+  const month = currentCalendarDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startDate = new Date(firstDay);
+  startDate.setDate(startDate.getDate() - ((firstDay.getDay() + 6) % 7));
 
-    const calendarView = document.getElementById('calendarView');
-    const calendarMonth = document.getElementById('calendarMonth');
-    
-    const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-                        'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-    calendarMonth.textContent = `${monthNames[month]} ${year}`;
+  const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+  monthLabel.textContent = `${monthNames[month]} ${year}`;
+  view.innerHTML = '';
 
-    calendarView.innerHTML = '';
+  ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].forEach(day => {
+    const header = document.createElement('div');
+    header.style.fontWeight = '700';
+    header.style.textAlign = 'center';
+    header.style.padding = '10px';
+    header.textContent = day;
+    view.appendChild(header);
+  });
 
-    // Headers des jours
-    const dayHeaders = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-    dayHeaders.forEach(day => {
-        const header = document.createElement('div');
-        header.style.fontWeight = '700';
-        header.style.textAlign = 'center';
-        header.style.padding = '10px';
-        header.textContent = day;
-        calendarView.appendChild(header);
-    });
+  const currentDate = new Date(startDate);
+  const today = new Date();
 
-    // Jours du calendrier
-    const currentDate = new Date(startDate);
-    while (currentDate <= lastDay || currentDate.getDay() !== 1) {
-        const dayCell = document.createElement('div');
-        dayCell.className = 'calendar-day';
+  while (currentDate <= lastDay || ((currentDate.getDay() + 6) % 7) !== 0) {
+    const dayCell = document.createElement('div');
+    dayCell.className = 'calendar-day';
 
-        if (currentDate.getMonth() !== month) {
-            dayCell.classList.add('other-month');
-        }
-
-        const dateStr = `${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
-        const hasSpecialEvent = [
-            ...GAME_CONFIG.internationalHolidays,
-            ...GAME_CONFIG.madagascarHolidays,
-            ...GAME_CONFIG.japanHolidays
-        ].some(e => e.date === dateStr);
-
-        if (currentDate.toDateString() === now.toDateString()) {
-            dayCell.classList.add('today');
-        } else if (hasSpecialEvent) {
-            dayCell.classList.add('event');
-        }
-
-        dayCell.innerHTML = `
-            <div class="calendar-day-number">${currentDate.getDate()}</div>
-            ${hasSpecialEvent ? '<div class="calendar-day-quests">✨</div>' : ''}
-        `;
-
-        calendarView.appendChild(dayCell);
-        currentDate.setDate(currentDate.getDate() + 1);
+    if (currentDate.getMonth() !== month) {
+      dayCell.classList.add('other-month');
     }
+
+    const hasSpecialEvent = [
+      ...GAME_CONFIG.internationalHolidays,
+      ...GAME_CONFIG.madagascarHolidays,
+      ...GAME_CONFIG.japanHolidays
+    ].some(event => matchesHoliday(event, currentDate));
+
+    if (currentDate.toDateString() === today.toDateString()) {
+      dayCell.classList.add('today');
+    } else if (hasSpecialEvent) {
+      dayCell.classList.add('event');
+    }
+
+    dayCell.innerHTML = `
+      <div class="calendar-day-number">${currentDate.getDate()}</div>
+      ${hasSpecialEvent ? '<div class="calendar-day-quests">✨</div>' : ''}
+    `;
+
+    view.appendChild(dayCell);
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
 }
 
 function prevMonth() {
-    // Implémenter la navigation du calendrier
+  currentCalendarDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() - 1, 1);
+  renderCalendar();
 }
 
 function nextMonth() {
-    // Implémenter la navigation du calendrier
+  currentCalendarDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 1);
+  renderCalendar();
+}
+
+function openAddPlayerModal() {
+  $('addPlayerModal')?.classList.add('show');
+}
+
+function closeAddPlayerModal() {
+  $('addPlayerModal')?.classList.remove('show');
+  if ($('newPlayerName')) {
+    $('newPlayerName').value = '';
+  }
 }
 
 function openCreateRaidModal() {
-    if (!Object.keys(gameData.players).length) {
-        alert('Veuillez créer au moins un joueur');
-        return;
-    }
-
-    const playersList = document.getElementById('raidPlayersList');
-    playersList.innerHTML = '';
-
-    Object.values(gameData.players).forEach(player => {
-        const checkbox = document.createElement('div');
-        checkbox.className = 'checkbox-item';
-        checkbox.innerHTML = `
-            <input type="checkbox" id="raid-player-${player.id}" value="${player.id}">
-            <label for="raid-player-${player.id}">
-                ${GAME_CONFIG.classesInfo[player.class].emoji} ${player.name}
-            </label>
-        `;
-        playersList.appendChild(checkbox);
-    });
-
-    document.getElementById('createRaidModal').classList.add('show');
+  if (!$('createRaidModal')) return;
+  $('createRaidModal').classList.add('show');
 }
 
 function closeCreateRaidModal() {
-    document.getElementById('createRaidModal').classList.remove('show');
-}
-
-function createRaid() {
-    const raidName = document.getElementById('raidName').value.trim();
-    const raidFloors = document.getElementById('raidFloors').value;
-    
-    const selectedPlayers = Array.from(document.querySelectorAll('#raidPlayersList input:checked'))
-        .map(checkbox => gameData.players[checkbox.value])
-        .filter(p => p);
-
-    if (!raidName) {
-        alert('Veuillez entrer un nom pour le raid');
-        return;
-    }
-
-    if (selectedPlayers.length < 2) {
-        alert('Sélectionnez au moins 2 joueurs');
-        return;
-    }
-
-    raidSystem.createRaid(raidName, raidFloors, selectedPlayers);
-    gameData.raids = raidSystem.raids;
-    gameData.save();
-
-    closeCreateRaidModal();
-    renderRaids();
-    soundSystem.playSound('click');
-}
-
-function renderRaids() {
-    const raidsList = document.getElementById('raidsList');
-    raidsList.innerHTML = '';
-
-    raidSystem.raids.forEach(raid => {
-        const progressPercent = ((raid.currentFloor - 1) / raid.totalFloors) * 100;
-        const playersText = raid.players.map(p => p.name).join(', ');
-
-        const raidCard = document.createElement('div');
-        raidCard.className = 'raid-card';
-
-        raidCard.innerHTML = `
-            <div class="raid-header">🏰 ${raid.name}</div>
-            
-            <div class="raid-info">
-                <div class="raid-stat">
-                    <div class="raid-stat-label">Étage</div>
-                    <div class="raid-stat-value">${raid.currentFloor}/${raid.totalFloors}</div>
-                </div>
-                <div class="raid-stat">
-                    <div class="raid-stat-label">Joueurs</div>
-                    <div class="raid-stat-value">${raid.players.length}</div>
-                </div>
-                <div class="raid-stat">
-                    <div class="raid-stat-label">État</div>
-                    <div class="raid-stat-value">${raid.status === 'active' ? '🟢' : '✓'}</div>
-                </div>
-            </div>
-
-            <div class="raid-players">
-                👥 ${playersText}
-            </div>
-
-            <div class="raid-progress">
-                Progression:
-                <div class="raid-progress-bar">
-                    <div class="raid-progress-fill" style="width: ${progressPercent}%"></div>
-                </div>
-            </div>
-
-            <div class="raid-buttons">
-                <button class="btn-raid-battle" onclick="startRaidBattle(${raid.id})">
-                    ⚔️ Combattre
-                </button>
-                <button class="btn-raid-delete" onclick="deleteRaid(${raid.id})">
-                    🗑️ Supprimer
-                </button>
-            </div>
-        `;
-
-        raidsList.appendChild(raidCard);
-    });
-
-    if (raidSystem.raids.length === 0) {
-        raidsList.innerHTML = '<p style="text-align: center; color: #718096; grid-column: 1/-1;">Aucun raid. Créez-en un pour commencer une aventure coopérative !</p>';
-    }
-}
-
-function startRaidBattle(raidId) {
-    const raid = raidSystem.startRaidBattle(raidId);
-    if (!raid) return;
-
-    const modal = document.getElementById('raidBattleModal');
-    const content = document.getElementById('raidBattleContent');
-
-    const renderBattle = () => {
-        const enemy = raidSystem.currentRaid.currentEnemy;
-        const playerHPs = raidSystem.currentRaid.playerHPs;
-
-        content.innerHTML = `
-            <h2>Étage ${raidSystem.currentRaid.currentFloor}/${raidSystem.currentRaid.totalFloors}</h2>
-            
-            <div class="raid-battle-container">
-                <div class="raid-floor-info">
-                    <div class="raid-floor-title">Ennemi</div>
-                    <div class="raid-floor-enemies">
-                        <div class="raid-enemy">
-                            <div class="raid-enemy-name">${enemy.name}</div>
-                            <div class="raid-enemy-hp">HP: ${Math.max(0, enemy.hp)}/${enemy.maxHp}</div>
-                            <div class="raid-enemy-hp-bar">
-                                <div class="raid-enemy-hp-fill" style="width: ${Math.max(0, (enemy.hp / enemy.maxHp) * 100)}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="raid-team-status">
-                    <div class="raid-team-title">Équipe</div>
-                    <div class="raid-team-members">
-                        ${raidSystem.currentRaid.players.map(p => `
-                            <div class="raid-member">
-                                <div class="raid-member-name">${GAME_CONFIG.classesInfo[p.class].emoji} ${p.name}</div>
-                                <div class="raid-member-hp">HP: ${Math.max(0, playerHPs[p.id])}/${p.getHP()}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-
-            <div class="raid-actions">
-                <button class="btn-attack" onclick="playerAttack()">⚔️ Attaquer</button>
-                <button class="btn-heal" onclick="playerHeal()">💚 Soigner</button>
-            </div>
-        `;
-    };
-
-    window.playerAttack = () => {
-        if (raidSystem.currentRaid.players.length > 0) {
-            const firstPlayer = raidSystem.currentRaid.players[0];
-            const result = raidSystem.playerAttackEnemy(firstPlayer.id);
-            
-            if (result.enemyHp <= 0) {
-                if (raidSystem.completeFloor()) {
-                    if (raidSystem.currentRaid.status === 'completed') {
-                        completeRaidBattle();
-                    } else {
-                        renderBattle();
-                    }
-                }
-            } else {
-                if (raidSystem.isTeamDefeated()) {
-                    alert('L\'équipe a été vaincue !');
-                    closeRaidBattle();
-                } else {
-                    renderBattle();
-                }
-            }
-        }
-    };
-
-    window.playerHeal = () => {
-        if (raidSystem.currentRaid.players.length > 0) {
-            const firstPlayer = raidSystem.currentRaid.players[0];
-            raidSystem.healTeam(firstPlayer.id);
-            renderBattle();
-        }
-    };
-
-    window.completeRaidBattle = () => {
-        raidSystem.currentRaid.players.forEach(player => {
-            player.gainXP(raidSystem.currentRaid.rewards.xp);
-            player.gainGold(raidSystem.currentRaid.rewards.gold);
-            updateAchievements(player);
-        });
-
-        gameData.save();
-        createConfetti();
-        alert(`🎉 Raid complété ! Récompense: ${raidSystem.currentRaid.rewards.xp} XP, ${raidSystem.currentRaid.rewards.gold} Gold`);
-        closeRaidBattle();
-        renderRaids();
-        renderPlayers();
-        renderAchievements();
-    };
-
-    window.closeRaidBattle = () => {
-        modal.classList.remove('show');
-        raidSystem.currentRaid = null;
-    };
-
-    renderBattle();
-    modal.classList.add('show');
-}
-
-function deleteRaid(raidId) {
-    if (confirm('Supprimer ce raid ?')) {
-        raidSystem.deleteRaid(raidId);
-        gameData.raids = raidSystem.raids;
-        gameData.save();
-        renderRaids();
-    }
-}
-
-function toggleSound() {
-    soundSystem.toggle();
-    gameData.soundEnabled = soundSystem.enabled;
-    gameData.save();
-    
-    const btn = document.getElementById('soundToggle');
-    btn.textContent = soundSystem.enabled ? '🔊' : '🔇';
+  $('createRaidModal')?.classList.remove('show');
 }
 
 function resetAllData() {
-    if (confirm('⚠️ Êtes-vous sûr ? Toutes les données seront supprimées !')) {
-        gameData.reset();
-        renderPlayers();
-        renderQuests();
-        renderAchievements();
-        renderRaids();
-    }
+  if (!confirm('⚠️ Êtes-vous sûr ? Toutes les données seront supprimées !')) return;
+  gameData.reset();
+  questSystem.refresh();
+  renderAll();
 }
 
-// ==================== TAB NAVIGATION ====================
+function toggleSound() {
+  const enabled = soundSystem.toggle();
+  gameData.soundEnabled = enabled;
+  gameData.save();
+
+  const btn = $('soundToggle');
+  if (btn) {
+    btn.textContent = enabled ? '🔊' : '🔇';
+  }
+}
+
+// ==================== GLOBAL RENDER ====================
+
+function renderAll() {
+  updateHeader();
+  updatePlayerBadges();
+  questSystem.refresh();
+  renderPlayers();
+  renderQuests(activeQuestFilter);
+  renderAchievements();
+  renderCalendar();
+  gameData.save();
+}
+
+// ==================== INIT ====================
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateHeader();
-    renderPlayers();
-    renderQuests();
-    renderAchievements();
-    renderCalendar();
-    renderRaids();
+  questSystem.refresh();
+  updateHeader();
+  renderAll();
+  soundSystem.syncFromData(gameData.soundEnabled);
+  if (gameData.soundEnabled) {
+    soundSystem.playBGM();
+  }
 
-    // Setup tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            e.target.classList.add('active');
-            const tabId = e.target.dataset.tab + '-tab';
-            document.getElementById(tabId).classList.add('active');
-        });
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      e.currentTarget.classList.add('active');
+      const tabId = e.currentTarget.dataset.tab + '-tab';
+      $(tabId)?.classList.add('active');
     });
+  });
 
-    // Setup quest filters
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            renderQuests(e.target.dataset.filter);
-        });
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+      renderQuests(e.currentTarget.dataset.filter || 'all');
     });
-
-    // Load sound state
-    if (gameData.soundEnabled) {
-        soundSystem.playBGM();
-    }
+  });
 });
+
+// expose for inline HTML onclick handlers
+window.addPlayer = addPlayer;
+window.deletePlayer = deletePlayer;
+window.completeQuest = completeQuest;
+window.completeQuestForPlayer = completeQuestForPlayer;
+window.openAddPlayerModal = openAddPlayerModal;
+window.closeAddPlayerModal = closeAddPlayerModal;
+window.openPlayerDetailsModal = openPlayerDetailsModal;
+window.closePlayerDetailsModal = closePlayerDetailsModal;
+window.prevMonth = prevMonth;
+window.nextMonth = nextMonth;
+window.toggleSound = toggleSound;
+window.resetAllData = resetAllData;
