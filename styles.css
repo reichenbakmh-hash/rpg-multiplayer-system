@@ -1,73 +1,116 @@
+/* ==========================================================================
+   ⚔️ RPG QUEST MASTER - SYSTEME HUD & GRAPHISMES EVOLUÉS (STYLES.CSS)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+/* --------------------------------------------------------------------------
+   1. VARIABLES GLOBALES ET PALETTE DE COULEURS
+   -------------------------------------------------------------------------- */
 :root {
-    --bg: #0f172a;
-    --bg-soft: rgba(15, 23, 42, 0.72);
-    --panel: rgba(255, 255, 255, 0.84);
-    --panel-strong: rgba(255, 255, 255, 0.94);
-    --text: #0f172a;
-    --muted: #64748b;
-    --border: rgba(255, 255, 255, 0.42);
-    --shadow: 0 18px 50px rgba(15, 23, 42, 0.16);
-    --radius-xl: 26px;
-    --radius-lg: 20px;
-    --radius-md: 14px;
-    --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-soft: linear-gradient(135deg, rgba(102,126,234,.12), rgba(118,75,162,.12));
-    --glass: blur(18px);
+    /* Thème Sombre Futuriste / Fantasy */
+    --bg-main: #060810;
+    --bg-soft: rgba(15, 23, 42, 0.75);
+    --panel-bg: rgba(18, 26, 47, 0.65);
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --panel-glow: rgba(99, 102, 241, 0.25);
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    /* Raretés des quêtes & Badges */
+    --tier-sss: #ffd700; /* Or Légendaire */
+    --tier-ss: #a855f7;  /* Violet Mythique */
+    --tier-s: #ef4444;   /* Rouge Épique */
+    --tier-a: #f97316;   /* Orange Rare */
+    --tier-b: #06b6d4;   /* Cyan Inhabituel */
+    --tier-c: #22c55e;   /* Vert Commun */
+    --tier-d: #94a3b8;   /* Gris Facile */
+    --tier-e: #475569;   /* Sombre Très Facile */
+
+    /* Classes de Joueurs */
+    --class-warrior: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+    --class-mage: linear-gradient(135deg, #a855f7 0%, #6b21a8 100%);
+    --class-archer: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+    --class-paladin: linear-gradient(135deg, #eab308 0%, #a16207 100%);
+
+    /* Effets & Glassmorphism */
+    --glass-blur: blur(16px);
+    --radius-xl: 24px;
+    --radius-lg: 18px;
+    --radius-md: 12px;
+    --shadow-main: 0 20px 40px rgba(0, 0, 0, 0.6);
+    --glow-primary: 0 0 20px rgba(99, 102, 241, 0.4);
 }
 
+/* --------------------------------------------------------------------------
+   2. REINITIALISATION ET ARRIÈRE-PLAN ANIMÉ
+   -------------------------------------------------------------------------- */
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 html, body {
-    margin: 0;
-    min-height: 100%;
-}
-
-body {
-    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: var(--text);
-    background:
-        radial-gradient(circle at top left, rgba(102,126,234,.35), transparent 28%),
-        radial-gradient(circle at top right, rgba(118,75,162,.28), transparent 25%),
-        linear-gradient(180deg, #eef2ff 0%, #f8fafc 35%, #eef2ff 100%);
+    min-height: 100vh;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Rajdhani', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
+    letter-spacing: 0.5px;
 }
 
+/* Grille holographique en arrière-plan */
 body::before {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
-    background-image:
-        linear-gradient(rgba(255,255,255,.18) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.18) 1px, transparent 1px);
-    background-size: 42px 42px;
-    opacity: 0.28;
-    mask-image: linear-gradient(180deg, rgba(0,0,0,.55), transparent 92%);
-}
-
-.ambient {
-    position: fixed;
-    width: 380px;
-    height: 380px;
-    border-radius: 50%;
-    filter: blur(100px);
-    opacity: 0.34;
-    pointer-events: none;
+    background-image: 
+        linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
     z-index: 0;
 }
 
-.ambient-1 { top: -120px; left: -120px; background: #667eea; }
-.ambient-2 { top: 220px; right: -120px; background: #764ba2; }
-.ambient-3 { bottom: -140px; left: 30%; background: #2ecc71; }
+/* Sphères orbes de lumière ambiante */
+.ambient {
+    position: fixed;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+    animation: ambientPulse 12s infinite alternate ease-in-out;
+}
 
+.ambient-1 { top: -100px; left: -100px; background: #4f46e5; }
+.ambient-2 { top: 30%; right: -150px; background: #9333ea; }
+.ambient-3 { bottom: -100px; left: 25%; background: #06b6d4; }
+
+@keyframes ambientPulse {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.25; }
+    100% { transform: scale(1.2) translate(30px, -20px); opacity: 0.45; }
+}
+
+/* Scrollbar Personnalisée RPG */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-main); }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; border: 1px solid var(--panel-border); }
+::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+
+/* --------------------------------------------------------------------------
+   3. CONTENEUR PRINCIPAL & HERO HEADER
+   -------------------------------------------------------------------------- */
 .app-shell {
     position: relative;
     z-index: 1;
-    width: min(1400px, calc(100% - 24px));
-    margin: 18px auto 40px;
-    padding: 0 0 20px;
+    width: min(1400px, calc(100% - 32px));
+    margin: 20px auto 50px;
 }
 
 .hero-panel {
@@ -75,165 +118,177 @@ body::before {
     justify-content: space-between;
     align-items: center;
     gap: 24px;
-    padding: 24px;
+    padding: 28px 36px;
     border-radius: var(--radius-xl);
-    background: linear-gradient(135deg, rgba(17,24,39,.78), rgba(17,24,39,.64));
-    color: #fff;
-    box-shadow: var(--shadow);
-    border: 1px solid rgba(255,255,255,.16);
-    backdrop-filter: var(--glass);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.65));
+    border: 1px solid var(--panel-border);
+    box-shadow: var(--shadow-main), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: var(--glass-blur);
+    position: relative;
+    overflow: hidden;
 }
 
-.hero-main h1 {
-    margin: 10px 0 10px;
-    font-size: clamp(2rem, 4vw, 3.8rem);
-    line-height: 1.02;
-    letter-spacing: -0.04em;
+.hero-panel::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, #6366f1, #a855f7, transparent);
 }
 
 .hero-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
+    padding: 6px 14px;
     border-radius: 999px;
-    background: rgba(255,255,255,.14);
-    border: 1px solid rgba(255,255,255,.16);
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: #818cf8;
     font-weight: 700;
-    font-size: .9rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+.hero-main h1 {
+    font-family: 'Cinzel', serif;
+    margin: 10px 0;
+    font-size: clamp(2.2rem, 4vw, 3.8rem);
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
 }
 
 .hero-subtitle {
-    max-width: 760px;
-    color: rgba(255,255,255,.82);
-    margin: 0;
-    font-size: 1.02rem;
-    line-height: 1.65;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 700px;
+    line-height: 1.5;
 }
 
 .hero-actions {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    gap: 12px;
     align-items: center;
 }
 
+/* --------------------------------------------------------------------------
+   4. TABLEAU DE BORD (DASHBOARD CARDS)
+   -------------------------------------------------------------------------- */
 .hero-dashboard,
 .quests-info {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px;
-    margin: 16px 0;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
 }
 
 .info-card {
-    padding: 14px 16px;
+    padding: 16px 20px;
     border-radius: var(--radius-lg);
-    background: rgba(255,255,255,.78);
-    border: 1px solid var(--border);
-    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
-    backdrop-filter: var(--glass);
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(99, 102, 241, 0.4);
 }
 
 .info-label {
     display: block;
-    color: var(--muted);
-    font-size: .86rem;
-    margin-bottom: 4px;
-    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 6px;
 }
 
 .info-value {
     display: block;
-    font-size: 1rem;
+    font-size: 1.25rem;
     font-weight: 800;
-    color: #1f2937;
-    overflow-wrap: anywhere;
+    color: #ffffff;
 }
 
+/* --------------------------------------------------------------------------
+   5. NAVIGATION & ONGLETS (HUD TABS)
+   -------------------------------------------------------------------------- */
 .nav-tabs {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
-    margin: 18px 0;
+    margin: 24px 0;
     padding: 8px;
     border-radius: var(--radius-xl);
-    background: rgba(255,255,255,.66);
-    backdrop-filter: var(--glass);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-}
-
-.tab-btn,
-.filter-btn,
-.btn-primary,
-.btn-secondary,
-.btn-add,
-.btn-reset,
-.btn-icon,
-.btn-complete,
-.btn-attack,
-.btn-heal,
-.btn-raid-battle,
-.btn-raid-delete {
-    appearance: none;
-    border: 0;
-    cursor: pointer;
-    font: inherit;
-    transition: transform .18s ease, box-shadow .18s ease, background .18s ease, opacity .18s ease, border-color .18s ease;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: var(--glass-blur);
+    overflow-x: auto;
 }
 
 .tab-btn {
-    padding: 12px 18px;
-    border-radius: 999px;
+    flex: 1;
+    min-width: 120px;
+    padding: 14px 20px;
+    border-radius: var(--radius-lg);
     background: transparent;
-    color: #334155;
+    color: var(--text-secondary);
+    font-family: 'Rajdhani', sans-serif;
     font-weight: 700;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tab-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .tab-btn.active {
-    background: var(--gradient);
-    color: #fff;
-    box-shadow: 0 14px 30px rgba(102,126,234,.26);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.2));
+    color: #ffffff;
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25), inset 0 0 10px rgba(99, 102, 241, 0.2);
 }
 
-.tab-btn:hover,
-.filter-btn:hover,
-.btn-primary:hover,
-.btn-secondary:hover,
-.btn-add:hover,
-.btn-reset:hover,
-.btn-icon:hover,
-.btn-complete:hover,
-.btn-attack:hover,
-.btn-heal:hover,
-.btn-raid-battle:hover,
-.btn-raid-delete:hover {
-    transform: translateY(-1px);
-}
-
+/* --------------------------------------------------------------------------
+   6. CONTENU SECTIONS & FILTRES
+   -------------------------------------------------------------------------- */
 .main-content {
     display: grid;
-    gap: 18px;
+    gap: 24px;
 }
 
 .tab-content {
     display: none;
-    padding: 20px;
+    padding: 28px;
     border-radius: var(--radius-xl);
-    background: rgba(255,255,255,.72);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    backdrop-filter: var(--glass);
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: var(--shadow-main);
 }
 
 .tab-content.active {
     display: block;
-    animation: fadeInUp .22s ease;
+    animation: fadeInContent 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(8px); }
+@keyframes fadeInContent {
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
@@ -242,789 +297,792 @@ body::before {
     justify-content: space-between;
     align-items: flex-start;
     gap: 16px;
-    margin-bottom: 18px;
+    margin-bottom: 24px;
     flex-wrap: wrap;
 }
 
-.section-header.compact {
-    margin-bottom: 10px;
-}
-
 .section-header h2 {
-    margin: 0;
-    font-size: clamp(1.4rem, 2vw, 2rem);
-    letter-spacing: -0.03em;
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    color: #ffffff;
+    letter-spacing: 1px;
 }
 
 .section-subtitle {
-    margin: 6px 0 0;
-    color: var(--muted);
-    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-size: 1rem;
 }
 
+/* Boutons d'action généraux */
+.btn-primary, .btn-secondary, .btn-add, .btn-reset, .btn-icon, 
+.btn-complete, .btn-attack, .btn-heal, .btn-raid-battle, .btn-raid-delete, .btn-undo {
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: uppercase;
+}
+
+.btn-primary, .btn-add, .btn-attack, .btn-raid-battle {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #ffffff;
+    padding: 12px 22px;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+}
+
+.btn-primary:hover, .btn-add:hover, .btn-attack:hover, .btn-raid-battle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+    background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+}
+
+.btn-secondary, .btn-reset, .btn-raid-delete {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    border: 1px solid var(--panel-border);
+    padding: 12px 20px;
+}
+
+.btn-secondary:hover, .btn-reset:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+}
+
+.btn-undo {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.btn-undo:hover {
+    background: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+.btn-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+    border: 1px solid var(--panel-border);
+    font-size: 1.2rem;
+}
+
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+}
+
+/* Filtres de Quêtes */
 .quest-filter {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
-    align-items: center;
 }
 
 .filter-btn {
-    padding: 10px 14px;
+    padding: 8px 16px;
     border-radius: 999px;
-    background: rgba(255,255,255,.9);
-    border: 1px solid rgba(148,163,184,.24);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--panel-border);
+    color: var(--text-secondary);
+    font-family: 'Rajdhani', sans-serif;
     font-weight: 700;
-    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .filter-btn.active {
-    background: var(--gradient);
-    color: #fff;
-    border-color: transparent;
-    box-shadow: 0 12px 26px rgba(102,126,234,.22);
+    background: #6366f1;
+    color: #ffffff;
+    border-color: #6366f1;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
 }
 
-.quests-grid,
-.players-list,
-.raids-list,
-.achievements-grid,
-.calendar-view,
-.leaderboard-list,
-.log-list {
-    display: grid;
-    gap: 14px;
-}
-
+/* --------------------------------------------------------------------------
+   7. RARETÉ DES QUÊTES (EFFET WOW SSS A E)
+   -------------------------------------------------------------------------- */
 .quests-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-}
-
-.players-list,
-.raids-list,
-.achievements-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-}
-
-.calendar-view {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.player-card,
-.quest-card,
-.raid-card,
-.achievement-card,
-.social-card,
-.calendar-day {
-    border-radius: var(--radius-lg);
-    background: var(--panel);
-    border: 1px solid rgba(255,255,255,.68);
-    box-shadow: 0 10px 26px rgba(15, 23, 42, .08);
-    overflow: hidden;
-}
-
-.player-card,
-.quest-card,
-.raid-card,
-.achievement-card,
-.social-card {
-    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
 }
 
 .quest-card {
+    border-radius: var(--radius-lg);
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--panel-border);
+    padding: 22px;
     position: relative;
-    transition: transform .18s ease, box-shadow .18s ease;
+    backdrop-filter: var(--glass-blur);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
 }
 
-.quest-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    border: 2px solid transparent;
-    background: linear-gradient(135deg, rgba(102,126,234,.35), rgba(118,75,162,.35)) border-box;
-    -webkit-mask:
-        linear-gradient(#fff 0 0) padding-box,
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: .35;
+.quest-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
 }
 
-.quest-card.completed {
-    opacity: .76;
-    filter: saturate(.92);
+/* --- TIER SSS (Légendaire / Annuel) --- */
+.quest-card.rarity-sss, .quest-card.tier-sss {
+    border: 2px solid var(--tier-sss);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.25), inset 0 0 15px rgba(255, 215, 0, 0.1);
+    animation: sssGlow 4s infinite alternate ease-in-out;
+}
+.quest-card.rarity-sss .quest-rarity {
+    background: linear-gradient(135deg, #ffd700, #b45309);
+    color: #000000;
+    font-weight: 900;
+    box-shadow: 0 0 12px var(--tier-sss);
 }
 
-.quest-card:hover,
-.player-card:hover,
-.raid-card:hover,
-.achievement-card:hover,
-.social-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 36px rgba(15, 23, 42, .12);
+@keyframes sssGlow {
+    0% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
+    100% { box-shadow: 0 0 35px rgba(255, 215, 0, 0.45); }
 }
 
-.quest-card.rarity-e { border-top: 4px solid #95a5a6; }
-.quest-card.rarity-d { border-top: 4px solid #3498db; }
-.quest-card.rarity-c { border-top: 4px solid #2ecc71; }
-.quest-card.rarity-b { border-top: 4px solid #9b59b6; }
-.quest-card.rarity-a { border-top: 4px solid #f39c12; }
-.quest-card.rarity-s { border-top: 4px solid #e67e22; }
-.quest-card.rarity-ss { border-top: 4px solid #e74c3c; }
-.quest-card.rarity-sss { border-top: 4px solid #c0392b; }
+/* --- TIER SS (Mythique / Mensuel) --- */
+.quest-card.rarity-ss, .quest-card.tier-ss {
+    border: 1.5px solid var(--tier-ss);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.25);
+}
+.quest-card.rarity-ss .quest-rarity {
+    background: var(--tier-ss);
+    color: #ffffff;
+    box-shadow: 0 0 10px var(--tier-ss);
+}
 
-.quest-header,
-.player-header,
-.raid-header {
+/* --- TIER S (Épique / Hebdomadaire) --- */
+.quest-card.rarity-s, .quest-card.tier-s {
+    border-left: 6px solid var(--tier-s);
+}
+.quest-card.rarity-s .quest-rarity { background: var(--tier-s); }
+
+/* --- TIER A à E (Quotidiennes) --- */
+.quest-card.rarity-a { border-left: 5px solid var(--tier-a); }
+.quest-card.rarity-a .quest-rarity { background: var(--tier-a); }
+
+.quest-card.rarity-b { border-left: 5px solid var(--tier-b); }
+.quest-card.rarity-b .quest-rarity { background: var(--tier-b); }
+
+.quest-card.rarity-c { border-left: 5px solid var(--tier-c); }
+.quest-card.rarity-c .quest-rarity { background: var(--tier-c); }
+
+.quest-card.rarity-d { border-left: 5px solid var(--tier-d); }
+.quest-card.rarity-d .quest-rarity { background: var(--tier-d); }
+
+.quest-card.rarity-e { border-left: 5px solid var(--tier-e); opacity: 0.85; }
+.quest-card.rarity-e .quest-rarity { background: var(--tier-e); }
+
+/* Contenu interne de la quête */
+.quest-header {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
     align-items: flex-start;
+    gap: 12px;
     margin-bottom: 12px;
 }
 
-.quest-title,
-.achievement-card h3,
-.raid-header {
-    margin: 0;
-    letter-spacing: -0.02em;
-}
-
-.quest-description,
-.player-class,
-.achievement-card p,
-.raids-info p,
-.helper-text {
-    color: var(--muted);
-    line-height: 1.6;
+.quest-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #ffffff;
 }
 
 .quest-rarity {
-    padding: 6px 10px;
+    padding: 4px 10px;
     border-radius: 999px;
+    font-size: 0.8rem;
     font-weight: 800;
-    color: #fff;
-    background: var(--gradient);
-    box-shadow: 0 8px 18px rgba(102,126,234,.2);
+    text-transform: uppercase;
+}
+
+.quest-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
 }
 
 .quest-rewards {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
-    margin: 12px 0;
+    margin-bottom: 16px;
 }
 
-.quest-xp,
-.quest-gold {
-    padding: 8px 10px;
+.quest-xp, .quest-gold {
+    padding: 6px 12px;
     border-radius: 999px;
-    background: rgba(102,126,234,.10);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--panel-border);
     font-weight: 800;
-}
-
-.quest-type {
-    display: inline-flex;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: rgba(15,23,42,.06);
-    color: #334155;
-    font-weight: 700;
-    margin-bottom: 14px;
+    font-size: 0.85rem;
+    color: #818cf8;
 }
 
 .quest-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
-}
-
-.quest-difficulty {
-    font-size: 1rem;
-    letter-spacing: 1px;
-}
-
-.btn-primary,
-.btn-secondary,
-.btn-add,
-.btn-reset,
-.btn-complete,
-.btn-attack,
-.btn-heal,
-.btn-raid-battle,
-.btn-raid-delete {
-    padding: 11px 16px;
-    border-radius: 14px;
-    font-weight: 800;
-}
-
-.btn-primary,
-.btn-add,
-.btn-attack,
-.btn-heal,
-.btn-raid-battle {
-    background: var(--gradient);
-    color: #fff;
-    box-shadow: 0 14px 26px rgba(102,126,234,.22);
-}
-
-.btn-secondary,
-.btn-reset,
-.btn-raid-delete {
-    background: rgba(255,255,255,.92);
-    color: #1f2937;
-    border: 1px solid rgba(148,163,184,.28);
+    margin-top: 10px;
 }
 
 .btn-complete {
-    background: #111827;
-    color: #fff;
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: #ffffff;
+    font-weight: 800;
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
 }
 
-.btn-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
-    display: inline-flex;
+.btn-complete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+}
+
+.quest-card.completed {
+    opacity: 0.5;
+    filter: grayscale(0.6);
+}
+
+/* --------------------------------------------------------------------------
+   8. CARTES DES JOUEURS & BARRES D'XP
+   -------------------------------------------------------------------------- */
+.players-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.player-card {
+    padding: 22px;
+    border-radius: var(--radius-lg);
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.player-header {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    background: rgba(255,255,255,.96);
-    color: #111827;
-    border: 1px solid rgba(148,163,184,.2);
-    font-size: 1.1rem;
-    box-shadow: 0 10px 22px rgba(15, 23, 42, .08);
-}
-
-.btn-add {
-    min-width: 160px;
+    gap: 16px;
 }
 
 .player-avatar {
     width: 64px;
     height: 64px;
+    border-radius: 18px;
     display: grid;
     place-items: center;
-    border-radius: 18px;
-    color: #fff;
-    font-size: 1.8rem;
-    box-shadow: 0 16px 32px rgba(15, 23, 42, .14);
+    font-size: 2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-.player-class-warrior { background: linear-gradient(135deg, #e74c3c, #ff7b72); }
-.player-class-mage { background: linear-gradient(135deg, #9b59b6, #c084fc); }
-.player-class-archer { background: linear-gradient(135deg, #2ecc71, #57d17a); }
-.player-class-paladin { background: linear-gradient(135deg, #f39c12, #ffce5b); }
+.player-class-warrior { background: var(--class-warrior); }
+.player-class-mage { background: var(--class-mage); }
+.player-class-archer { background: var(--class-archer); }
+.player-class-paladin { background: var(--class-paladin); }
 
 .player-info h3 {
-    margin: 0;
-    font-size: 1.15rem;
+    font-size: 1.3rem;
+    color: #ffffff;
 }
 
 .player-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 8px;
-    padding: 5px 9px;
+    display: inline-block;
+    padding: 4px 10px;
     border-radius: 999px;
-    background: rgba(102,126,234,.12);
-    font-size: .8rem;
-    font-weight: 800;
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 4px;
 }
 
-.player-stats,
-.raid-info {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-    margin: 14px 0;
-}
-
-.stat-row,
-.raid-stat {
+/* BARRES D'EXPERIENCE DYNAMIQUES */
+.xp-container {
     display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: rgba(255,255,255,.72);
-    border: 1px solid rgba(148,163,184,.18);
-}
-
-.stat-label,
-.raid-stat-label {
-    color: var(--muted);
-    font-size: .92rem;
-}
-
-.stat-value,
-.raid-stat-value {
-    font-weight: 800;
-    color: #111827;
-}
-
-.xp-container,
-.raid-progress {
-    margin-top: 12px;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .xp-label {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
+    font-size: 0.9rem;
     font-weight: 700;
-    color: #334155;
+    color: var(--text-secondary);
 }
 
-.xp-bar,
-.raid-progress-bar,
-.raid-enemy-hp-bar {
-    width: 100%;
+.xp-bar {
     height: 16px;
     border-radius: 999px;
-    background: rgba(148,163,184,.20);
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--panel-border);
     overflow: hidden;
-}
-
-.xp-fill,
-.raid-progress-fill,
-.raid-enemy-hp-fill {
-    height: 100%;
-    border-radius: inherit;
-    background: linear-gradient(90deg, #667eea, #764ba2);
     position: relative;
-    transition: width .3s ease;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
 }
 
-.xp-text {
-    position: absolute;
-    inset: 0;
+.xp-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #6366f1, #a855f7, #06b6d4);
+    background-size: 200% 100%;
+    animation: xpBarAnimation 3s ease infinite;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+}
+
+@keyframes xpBarAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* --------------------------------------------------------------------------
+   9. RAIDS & COMBATS COOPÉRATIFS
+   -------------------------------------------------------------------------- */
+.raids-list {
     display: grid;
-    place-items: center;
-    font-size: .74rem;
-    font-weight: 800;
-    color: #fff;
-}
-
-.achievements-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
-
-.achievement-card {
-    text-align: center;
-}
-
-.achievement-card.unlocked {
-    background: linear-gradient(135deg, rgba(46,204,113,.12), rgba(255,255,255,.9));
-}
-
-.achievement-card.locked {
-    opacity: .88;
-}
-
-.achievement-icon {
-    width: 68px;
-    height: 68px;
-    margin: 0 auto 12px;
-    display: grid;
-    place-items: center;
-    font-size: 2rem;
-    border-radius: 20px;
-    background: var(--gradient-soft);
-}
-
-.achievement-progress {
-    margin-top: 10px;
-    color: var(--muted);
-    font-size: .9rem;
-}
-
-.raids-info {
-    margin-bottom: 16px;
-    padding: 14px 16px;
-    border-radius: var(--radius-lg);
-    background: var(--gradient-soft);
-    border: 1px solid rgba(102,126,234,.14);
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
 }
 
 .raid-card {
-    background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(245,247,255,.96));
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(30, 27, 75, 0.7), rgba(15, 23, 42, 0.9));
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.1);
 }
 
-.raid-players {
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: rgba(15,23,42,.05);
-    margin: 10px 0;
-    color: #334155;
+.raid-card:hover {
+    border-color: #ef4444;
+    box-shadow: 0 12px 35px rgba(239, 68, 68, 0.25);
 }
 
-.raid-buttons {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    margin-top: 12px;
-}
-
-.raid-battle-container {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 14px;
-    margin: 16px 0;
-}
-
-.raid-floor-info,
-.raid-team-status {
-    padding: 14px;
-    border-radius: 18px;
-    background: rgba(255,255,255,.74);
-    border: 1px solid rgba(148,163,184,.18);
-}
-
-.raid-floor-title,
-.raid-team-title {
-    font-weight: 900;
-    margin-bottom: 10px;
-}
-
-.raid-member,
-.raid-enemy {
-    padding: 12px;
-    border-radius: 14px;
-    background: rgba(255,255,255,.88);
-    border: 1px solid rgba(148,163,184,.18);
-}
-
-.raid-team-members,
-.raid-floor-enemies {
-    display: grid;
-    gap: 10px;
-}
-
-.raid-enemy-name,
-.raid-member-name {
-    font-weight: 800;
-    margin-bottom: 6px;
-}
-
-.raid-member-hp,
-.raid-enemy-hp {
-    color: var(--muted);
-    font-size: .92rem;
-    margin-bottom: 8px;
-}
-
-.calendar-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
+.raid-enemy-hp-bar {
+    height: 18px;
     border-radius: 999px;
-    background: rgba(255,255,255,.82);
-    border: 1px solid rgba(148,163,184,.18);
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    overflow: hidden;
+    margin: 10px 0;
 }
 
+.raid-enemy-hp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ef4444, #b91c1c);
+    box-shadow: 0 0 10px #ef4444;
+    transition: width 0.3s ease;
+}
+
+/* --------------------------------------------------------------------------
+   10. CALENDRIER DES QUETES
+   -------------------------------------------------------------------------- */
 .calendar-view {
-    margin-top: 8px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
 }
 
 .calendar-day {
-    min-height: 104px;
+    min-height: 100px;
     padding: 12px;
-    background: rgba(255,255,255,.86);
-    border: 1px solid rgba(148,163,184,.20);
+    border-radius: var(--radius-md);
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .calendar-day.today {
-    outline: 2px solid rgba(102,126,234,.45);
-    background: linear-gradient(135deg, rgba(102,126,234,.14), rgba(255,255,255,.92));
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.15);
+    box-shadow: inset 0 0 15px rgba(99, 102, 241, 0.3);
 }
 
 .calendar-day.event {
-    background: linear-gradient(135deg, rgba(46,204,113,.12), rgba(255,255,255,.92));
-}
-
-.calendar-day.other-month {
-    opacity: .42;
+    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.08);
 }
 
 .calendar-day-number {
-    font-weight: 900;
-    font-size: 1.05rem;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #ffffff;
+}
+.social-card {
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: var(--glass-blur);
 }
 
-.calendar-day-quests {
-    margin-top: 10px;
-    font-size: 1.2rem;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 3000;
-    background: rgba(15,23,42,.58);
-    backdrop-filter: blur(8px);
-    padding: 18px;
-}
-
-.modal.show {
-    display: grid;
-    place-items: center;
-    animation: fadeInUp .18s ease;
-}
-
-.modal-content {
-    width: min(640px, 96vw);
-    max-height: 92vh;
-    overflow: auto;
-    padding: 22px;
-    border-radius: 24px;
-    background: rgba(255,255,255,.96);
-    box-shadow: 0 24px 70px rgba(0,0,0,.22);
-    border: 1px solid rgba(255,255,255,.70);
-}
-
-.modal-large {
-    width: min(980px, 96vw);
-}
-
-.close {
-    float: right;
-    cursor: pointer;
-    font-size: 1.8rem;
-    line-height: 1;
-    color: #64748b;
-}
-
-.modal-form {
-    display: grid;
-    gap: 10px;
-    margin: 14px 0;
-}
-
-.modal-form input,
-.modal-form select,
-.auth-fields input {
-    width: 100%;
-    border: 1px solid rgba(148,163,184,.32);
-    border-radius: 14px;
-    padding: 11px 12px;
-    outline: none;
-    background: #fff;
-    color: #111827;
-}
-
-.modal-buttons,
-.auth-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 14px;
-}
-
-.players-checkboxes {
-    display: grid;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.checkbox-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: rgba(255,255,255,.9);
-    border: 1px solid rgba(148,163,184,.18);
-}
-
-.social-grid {
-    display: grid;
-    grid-template-columns: 1.1fr 1.3fr;
-    gap: 16px;
-}
-
-.social-card h3 {
-    margin-top: 0;
-}
-
-.auth-fields {
-    display: grid;
-    gap: 10px;
-}
-
-.helper-text {
-    margin: 0;
-    font-size: .92rem;
-}
-
+/* Fenêtre de Chat */
 .chat-shell {
-    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    height: 420px;
 }
 
 .chat-messages {
+    flex: 1;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    max-height: 330px;
-    overflow: auto;
-    padding-right: 4px;
+    gap: 10px;
+    padding-right: 6px;
+    margin: 14px 0;
 }
 
 .chat-message {
-    max-width: 92%;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: rgba(102,126,234,.08);
-    border: 1px solid rgba(102,126,234,.12);
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--panel-border);
 }
 
 .chat-message.me {
     align-self: flex-end;
-    background: rgba(46,204,113,.10);
-    border-color: rgba(46,204,113,.18);
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.4);
 }
 
 .chat-meta {
-    font-size: .78rem;
-    color: #64748b;
+    font-size: 0.75rem;
+    color: var(--text-muted);
     margin-bottom: 4px;
 }
 
 .chat-input-row {
     display: flex;
     gap: 10px;
-    align-items: center;
 }
 
-.chat-input-row input {
+.chat-input-row input, .modal-form input, .modal-form select, .auth-fields input {
     flex: 1;
-    border: 1px solid rgba(148,163,184,.28);
-    border-radius: 14px;
-    padding: 11px 12px;
-    background: #fff;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--panel-border);
+    color: #ffffff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
     outline: none;
+    transition: border-color 0.2s ease;
 }
 
-.private-layout {
-    display: grid;
-    grid-template-columns: .95fr 1.25fr;
-    gap: 12px;
+.chat-input-row input:focus, .modal-form input:focus, .auth-fields input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
 }
 
-.private-users,
-.private-thread {
-    display: grid;
+/* Journal des Actions (Logs) */
+.log-list {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
 }
 
-.chat-user-list {
-    display: grid;
-    gap: 8px;
-    max-height: 330px;
-    overflow: auto;
-}
-
-.chat-user {
+.log-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
-    padding: 10px 12px;
-    border-radius: 14px;
-    background: #fff;
-    border: 1px solid rgba(148,163,184,.22);
-    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--panel-border);
+    font-size: 0.9rem;
 }
 
-.chat-user.active {
-    background: var(--gradient-soft);
-    border-color: rgba(102,126,234,.36);
+/* --------------------------------------------------------------------------
+   12. FENÊTRES MODALES (MODALS)
+   -------------------------------------------------------------------------- */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 20px;
 }
 
-.badge-soft {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 10px;
-    border-radius: 999px;
-    background: rgba(102,126,234,.12);
-    color: #1f2937;
-    font-weight: 800;
-    font-size: .82rem;
-}
-
-.log-list,
-.leaderboard-list {
+.modal.show {
     display: grid;
-    gap: 10px;
+    place-items: center;
+    animation: modalFadeIn 0.2s ease;
 }
 
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-content {
+    width: min(580px, 95vw);
+    padding: 28px;
+    border-radius: var(--radius-xl);
+    background: rgba(18, 26, 47, 0.95);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.close {
+    float: right;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.close:hover { color: #ffffff; }
+
+/* --------------------------------------------------------------------------
+   13. EFFETS VISUELS ET NOTIFICATIONS XP DEBOUT
+   -------------------------------------------------------------------------- */
 #confetti {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 3500;
+    z-index: 4000;
 }
 
-.confetti-piece {
-    position: absolute;
-    top: -10px;
-    width: 10px;
-    height: 16px;
-    border-radius: 4px;
-    background: #667eea;
-    animation: confettiFall 2.8s linear forwards;
-}
-
-@keyframes confettiFall {
-    0% {
-        transform: translateY(0) translateX(0) rotate(0deg);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(110vh) translateX(var(--x)) rotate(var(--rotation));
-        opacity: 0;
-    }
-}
-
-.xp-notification,
-.damage-notification {
+.xp-notification, .damage-notification {
     position: fixed;
-    z-index: 3600;
-    transform: translate(-50%, -50%);
+    z-index: 5000;
     pointer-events: none;
-    opacity: 0;
+    font-family: 'Cinzel', serif;
     font-weight: 900;
-    padding: 8px 12px;
-    border-radius: 999px;
+    font-size: 2rem;
+    opacity: 0;
 }
 
 .xp-notification {
-    color: #fff;
-    background: linear-gradient(135deg, #2ecc71, #16a34a);
+    color: #4ade80;
+    text-shadow: 0 0 15px #22c55e;
 }
 
 .damage-notification {
-    color: #fff;
-    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #f87171;
+    text-shadow: 0 0 15px #ef4444;
 }
 
-.xp-float,
-.damage-float {
-    animation: floatPop 1.4s ease forwards;
+.xp-float, .damage-float {
+    animation: popAndFloat 1.2s ease-out forwards;
 }
 
-@keyframes floatPop {
-    0% { opacity: 0; transform: translate(-50%, -50%) translateY(10px) scale(.95); }
-    20% { opacity: 1; transform: translate(-50%, -50%) translateY(0) scale(1); }
-    80% { opacity: 1; }
-    1
+@keyframes popAndFloat {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -80%) scale(1.2); }
+    100% { opacity: 0; transform: translate(-50%, -150%) scale(1); }
+}
+/* --------------------------------------------------------------------------
+   11. SOCIAL, CHAT ET LOGS D'ANNULATION
+   -------------------------------------------------------------------------- */
+.social-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+.social-card {
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: var(--glass-blur);
+}
+
+/* Fenêtre de Chat */
+.chat-shell {
+    display: flex;
+    flex-direction: column;
+    height: 420px;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 6px;
+    margin: 14px 0;
+}
+
+.chat-message {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--panel-border);
+}
+
+.chat-message.me {
+    align-self: flex-end;
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+.chat-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.chat-input-row {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input-row input, .modal-form input, .modal-form select, .auth-fields input {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--panel-border);
+    color: #ffffff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.chat-input-row input:focus, .modal-form input:focus, .auth-fields input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+/* Journal des Actions (Logs) */
+.log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.log-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--panel-border);
+    font-size: 0.9rem;
+}
+/* --------------------------------------------------------------------------
+   12. FENÊTRES MODALES (MODALS)
+   -------------------------------------------------------------------------- */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+}
+
+.modal.show {
+    display: grid;
+    place-items: center;
+    animation: modalFadeIn 0.2s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-content {
+    width: min(580px, 95vw);
+    padding: 28px;
+    border-radius: var(--radius-xl);
+    background: rgba(18, 26, 47, 0.95);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.close {
+    float: right;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.close:hover { color: #ffffff; }
+/* --------------------------------------------------------------------------
+   13. EFFETS VISUELS ET NOTIFICATIONS XP DEBOUT
+   -------------------------------------------------------------------------- */
+#confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4000;
+}
+
+.xp-notification, .damage-notification {
+    position: fixed;
+    z-index: 5000;
+    pointer-events: none;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 2rem;
+    opacity: 0;
+}
+
+.xp-notification {
+    color: #4ade80;
+    text-shadow: 0 0 15px #22c55e;
+}
+
+.damage-notification {
+    color: #f87171;
+    text-shadow: 0 0 15px #ef4444;
+}
+
+.xp-float, .damage-float {
+    animation: popAndFloat 1.2s ease-out forwards;
+}
+
+@keyframes popAndFloat {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -80%) scale(1.2); }
+    100% { opacity: 0; transform: translate(-50%, -150%) scale(1); }
+}
