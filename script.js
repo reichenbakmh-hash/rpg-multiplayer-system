@@ -124,11 +124,12 @@ class QuestSystem {
     generateDailyQuests() {
         const dailyRarities = ['E', 'D', 'C', 'B', 'A'];
         const questTitles = {
-            E: ['Collecter 5 bois', 'Parler à un PNJ', 'Explorer la forêt', 'Casser des roches'],
-            D: ['Tuer 10 créatures faibles', 'Trouver 3 herbes rares', 'Nettoyer le château'],
-            C: ['Combattre 20 goblins', 'Récupérer 5 cristaux', 'Aider les villageois'],
-            B: ['Affronter un mini-boss', 'Infiltrer une tour', 'Sauver des prisonniers'],
-            A: ['Vaincre le chef gobelin', 'Récupérer l\'artefact perdu', 'Explorer les grottes sombres']
+    E: ['Boire 2 verres d’eau', 'Marcher 500 pas', 'Lire 1 page d’un livre', 'Faire 5 respirations profondes'],
+    D: ['Faire 10 pompes', 'Écrire 3 lignes de journal', 'tenir 2h sans téléphone', 'Envoyer un message à un ami'],
+    C: ['Cuisiner un repas maison', 'Apprendre 5 mots en anglais', 'Faire 15 minutes de méditation'],
+    B: ['Courir 2 km', 'Compléter une tâche importante', 'Apprendre une nouvelle compétence'],
+    A: ['Faire 1 heure de sport', 'Terminer un projet en cours', 'Passer une journée sans réseaux sociaux']
+};
         };
 
         dailyRarities.forEach(rarity => {
@@ -154,10 +155,10 @@ class QuestSystem {
 
     generateWeeklyQuests() {
         const weeklyQuests = [
-            { title: 'Nettoyer la crypte', description: 'Éliminez 50 monstres' },
-            { title: 'Trésor caché', description: 'Trouvez le butin du roi' },
-            { title: 'Duel épique', description: 'Battez 5 champions' },
-            { title: 'Protéger la cité', description: 'Défendez contre une invasion' }
+            { title: 'Nettoyer la chambre', description: 'tout devrait être bien rangé avec pj' },
+            { title: 'Trésor caché', description: 'Trouvez un ami qui parle japonais et demandez lui de ses nouvelles en japonais et si vous ne connaissez personne parlez à un inconnu' },
+            { title: 'Duel épique', description: 'Battez des ennemis ensemble dans un jeu vidéo' },
+            { title: 'Protéger la cité', description: 'Posez votre téléphone et allez vérifier vos objets et déterminez les choses dont vous ne pretez pas attention en général' }
         ];
 
         const week = Math.floor(new Date().getTime() / (7 * 24 * 60 * 60 * 1000));
@@ -181,9 +182,9 @@ class QuestSystem {
     generateMonthlyQuests() {
         const monthlyQuests = [
             { title: 'Dominez le donjons', description: 'Atteignez le 10e étage' },
-            { title: 'Maître du combat', description: 'Gagnez 20 combats d\'affilée' },
-            { title: 'Trésor des dragons', description: 'Récupérez l\'or des dragons' },
-            { title: 'Héros légendaire', description: 'Sauvez le royaume entier' }
+            { title: 'Maître du combat', description: 'Gagnez 20 combats dans un jeu' },
+            { title: 'Trésor des dragons', description: 'Récupérez une somme d argent en faisant une affaire' },
+            { title: 'Héros légendaire', description: 'aidez les gens dans leur taches durant plus de 120h' }
         ];
 
         const month = new Date().toISOString().slice(0, 7);
@@ -214,8 +215,8 @@ class QuestSystem {
                 id: questId,
                 type: 'annual',
                 rarity: 'SSS',
-                title: 'Conquérir le monde',
-                description: 'Devenir le plus grand héros du royaume',
+                title: 'Conquérir le coeur de plusieurs personnes avec plus de 60 personnes',
+                description: 'Devenir le plus grand héros du royaume en aidant un nombre massif de personnes avec plus de 86 personnes',
                 xp: 100,
                 gold: 200,
                 difficulty: 'SSS',
@@ -427,8 +428,8 @@ class RaidSystem {
     generateFloorEnemy(floor) {
         const difficulty = Math.floor(floor / 2) + 1;
         const enemyNames = [
-            'Gobelin', 'Orc', 'Zombie', 'Squelette', 'Troll',
-            'Dragon Bébé', 'Sorcier Noir', 'Chevalier Maudit', 'Bandit', 'Bête Sauvage'
+            'Gobelin avarice', 'Orc gourmandise', 'Zombie procrastination', 'bordélique', 'Troll colère',
+            'la malbouffe', 'Ecran', 'jus', 'injures', 'égo'
         ];
         
         const name = enemyNames[Math.floor(Math.random() * enemyNames.length)];
