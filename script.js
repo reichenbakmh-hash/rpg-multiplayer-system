@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ⚔️ RPG QUEST MASTER - SCRIPT PRINCIPAL ÉLABORÉ (SCRIPT.JS)
+   ⚔️ RPG QUEST MASTER - SCRIPT OPTIMISÉ (SCRIPT.JS)
    ========================================================================== */
 
 'use strict';
@@ -36,7 +36,7 @@ const GAME_CONFIG = {
   classesInfo: {
     warrior: { emoji: '⚔️', name: 'Guerrier de Sang', color: '#ef4444', primaryStat: 'physique' },
     mage: { emoji: '🔮', name: 'Mage Arcanique', color: '#a855f7', primaryStat: 'intelligence' },
-    archer: { emoji: '🏹', name: 'Ranger de l’Ombre', color: '#22c55e', primaryStat: 'creativite' },
+    archer: { emoji: '🏹', name: 'Ranger de l'Ombre', color: '#22c55e', primaryStat: 'creativite' },
     paladin: { emoji: '✨', name: 'Paladin Lumineux', color: '#f59e0b', primaryStat: 'discipline' }
   },
   statDefinitions: {
@@ -61,26 +61,26 @@ const GAME_CONFIG = {
 
 const STAT_QUEST_POOLS = {
   physique: [
-    'Réaliser 25 séries d’exercices physiques',
+    'Réaliser 25 séries d'exercices physiques',
     'Session de marche active de 30 minutes',
-    'Séance complète d’étirements musculaires',
-    'Monter 100 marches d’escalier d’affilée'
+    'Séance complète d'étirements musculaires',
+    'Monter 100 marches d'escalier d'affilée'
   ],
   intelligence: [
-    'Lire 25 pages d’un livre d’apprentissage',
+    'Lire 25 pages d'un livre d'apprentissage',
     'Résoudre une énigme ou un problème complexe',
     'Suivre un cours ou tutoriel instructif',
     'Rédiger un résumé de connaissances acquises'
   ],
   discipline: [
-    'Planifier l’intégralité de la journée du lendemain',
+    'Planifier l'intégralité de la journée du lendemain',
     'Session de focus profond (Pomodoro 45 min)',
     'Ranger et purifier complètement le bureau',
     'Exécuter la routine matinale sans déviation'
   ],
   social: [
-    'Prendre des nouvelles d’un ami ou proche',
-    'Exprimer un compliment sincère à quelqu’un',
+    'Prendre des nouvelles d'un ami ou proche',
+    'Exprimer un compliment sincère à quelqu'un',
     'Participer à une discussion de groupe constructive',
     'Aider activement un collègue ou membre de guilde'
   ],
@@ -91,7 +91,7 @@ const STAT_QUEST_POOLS = {
     'Composer ou arranger un motif musical'
   ],
   sante: [
-    'Boire au minimum 2 Litres d’eau pure',
+    'Boire au minimum 2 Litres d'eau pure',
     'Session de méditation et respiration de 10 min',
     'Consommer un repas 100% équilibré et naturel',
     'Éteindre tous les écrans 1 heure avant le coucher'
@@ -106,8 +106,8 @@ const STAT_QUEST_POOLS = {
 
 const LOOT_TABLE = [
   { rarity: 'common', weight: 55, name: 'Potion de Volonté', stat: 'discipline', bonus: 2, icon: '🧪' },
-  { rarity: 'rare', weight: 28, name: 'Bague d’Endurance', stat: 'physique', bonus: 4, icon: '💍' },
-  { rarity: 'epic', weight: 12, name: 'Grimoire d’Omniscience', stat: 'intelligence', bonus: 7, icon: '📖' },
+  { rarity: 'rare', weight: 28, name: 'Bague d'Endurance', stat: 'physique', bonus: 4, icon: '💍' },
+  { rarity: 'epic', weight: 12, name: 'Grimoire d'Omniscience', stat: 'intelligence', bonus: 7, icon: '📖' },
   { rarity: 'legendary', weight: 5, name: 'Couronne du Monarque', stat: 'all', bonus: 12, icon: '👑' }
 ];
 
@@ -117,12 +117,15 @@ const ACHIEVEMENTS = [
   { id: 'quest_50', icon: '⚔️', name: 'Tueur de Démons', description: 'Accomplir 50 quêtes', condition: p => p.completedQuests.length >= 50 },
   { id: 'level_5', icon: '🌟', name: 'Ascension I', description: 'Atteindre le niveau 5', condition: p => p.level >= 5 },
   { id: 'level_15', icon: '🔥', name: 'Ascension II', description: 'Atteindre le niveau 15', condition: p => p.level >= 15 },
-  { id: 'gold_1000', icon: '💰', name: 'Pactole Rutilant', description: 'Accumuler 1000 Pièces d’Or', condition: p => p.gold >= 1000 }
+  { id: 'gold_1000', icon: '💰', name: 'Pactole Rutilant', description: 'Accumuler 1000 Pièces d'Or', condition: p => p.gold >= 1000 }
 ];
 
 // ==================== 2. FONCTIONS UTILITAIRES & HELPERS ====================
 
-const $ = (id) => document.getElementById(id);
+const $ = (id) => {
+  const el = document.getElementById(id);
+  return el || null;
+};
 
 function safeJsonParse(val, fallback) {
   try { return val ? JSON.parse(val) : fallback; }
@@ -142,11 +145,14 @@ function dateKey(d = new Date()) {
 }
 
 function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return String(str).replace(/[&<>"']/g, char => map[char]);
 }
 
 function getCurrentSeason() {
@@ -168,17 +174,23 @@ function pickDeterministic(arr, seed) {
   return arr[seed % arr.length];
 }
 
-function showToast(msg, type = 'info') {
-  let container = $('toastContainer');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'toastContainer';
-    document.body.appendChild(container);
+function getOrCreateElement(id, tagName = 'div') {
+  let el = $(id);
+  if (!el) {
+    el = document.createElement(tagName);
+    el.id = id;
+    document.body.appendChild(el);
   }
+  return el;
+}
+
+function showToast(msg, type = 'info') {
+  const container = getOrCreateElement('toastContainer');
   const toast = document.createElement('div');
   toast.className = `rpg-toast ${type} show`;
   toast.textContent = msg;
   container.appendChild(toast);
+  
   setTimeout(() => {
     toast.classList.remove('show');
     setTimeout(() => toast.remove(), 300);
@@ -198,30 +210,36 @@ function showFloatingText(text, x, y, type = 'xp') {
 function createConfetti() {
   const zone = $('confetti');
   if (!zone) return;
+  
   zone.innerHTML = '';
+  const colors = ['#ffd700', '#6366f1', '#a855f7', '#22c55e', '#ef4444'];
+  
   for (let i = 0; i < 35; i++) {
     const p = document.createElement('div');
-    p.style.position = 'absolute';
-    p.style.left = Math.random() * 100 + '%';
-    p.style.top = '-10px';
-    p.style.width = '8px';
-    p.style.height = '8px';
-    p.style.background = ['#ffd700', '#6366f1', '#a855f7', '#22c55e', '#ef4444'][Math.floor(Math.random() * 5)];
-    p.style.borderRadius = '50%';
-    p.style.transition = 'all 2.5s cubic-bezier(0.25, 1, 0.5, 1)';
+    p.style.cssText = `
+      position: absolute;
+      left: ${Math.random() * 100}%;
+      top: -10px;
+      width: 8px;
+      height: 8px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      border-radius: 50%;
+      transition: all 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+    `;
     zone.appendChild(p);
 
     setTimeout(() => {
       p.style.transform = `translate(${(Math.random() - 0.5) * 300}px, ${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`;
       p.style.opacity = '0';
     }, 50);
+    
     setTimeout(() => p.remove(), 2600);
   }
 }
 
 // ==================== 3. GESTION DE L'ÉTAT DU JEU (STATE) ====================
 
-let GameState = {
+const GameState = {
   player: null,
   quests: [],
   raids: [],
@@ -278,7 +296,7 @@ function createDefaultRaids() {
 function loadState() {
   const saved = safeJsonParse(localStorage.getItem(STORAGE_KEY), null);
   if (saved) {
-    GameState = saved;
+    Object.assign(GameState, saved);
   } else {
     GameState.player = createDefaultPlayer();
     GameState.raids = createDefaultRaids();
@@ -300,7 +318,7 @@ function generateDailyQuests() {
 
   // Quêtes quotidiennes générées dynamiquement
   Object.entries(GAME_CONFIG.statDefinitions).forEach(([statKey, statInfo], idx) => {
-    const pool = STAT_QUEST_POOLS[statKey] || ['Mission spéciale de ' + statInfo.label];
+    const pool = STAT_QUEST_POOLS[statKey] || [`Mission spéciale de ${statInfo.label}`];
     const title = pickDeterministic(pool, seed + idx);
     const rarity = idx % 2 === 0 ? 'D' : 'C';
 
@@ -353,7 +371,7 @@ function completeQuest(questId, event) {
   }
 
   // Animation Effet Flottant (XP & Or)
-  if (event && event.clientX) {
+  if (event?.clientX) {
     showFloatingText(`+${quest.xp} XP`, event.clientX, event.clientY - 20, 'xp');
   }
 
@@ -381,7 +399,7 @@ function damageActiveRaids(damageAmount, event) {
   GameState.raids.forEach(raid => {
     if (raid.currentHp > 0) {
       raid.currentHp = Math.max(0, raid.currentHp - damageAmount);
-      if (event && event.clientX) {
+      if (event?.clientX) {
         showFloatingText(`-${damageAmount} HP`, event.clientX + 40, event.clientY - 40, 'damage');
       }
       if (raid.currentHp === 0) {
@@ -432,7 +450,6 @@ function undoQuestCompletion(logId) {
     GameState.player.xp = Math.max(0, GameState.player.xp - quest.xp);
     GameState.player.gold = Math.max(0, GameState.player.gold - quest.gold);
     
-    // Retrait du journal
     GameState.logs.splice(logIndex, 1);
     
     saveState();
@@ -453,82 +470,80 @@ function addLog(text, questId = null) {
 
 // ==================== 5. RENDU DE L'INTERFACE (UI RENDERERS) ====================
 
-function renderHero() {
+/**
+ * Template builders - Fonctions pures pour construire le HTML sans le modifier dans le DOM
+ */
+
+function buildHeroHtml() {
   const p = GameState.player;
-  if (!p) return;
+  if (!p) return '';
 
   const reqXp = getRequiredXP(p.level);
   const xpPercent = Math.min(100, Math.floor((p.xp / reqXp) * 100));
   const season = getCurrentSeason();
 
-  // Injection du Header Hero
-  const heroContainer = $('heroPanel');
-  if (heroContainer) {
-    heroContainer.innerHTML = `
-      <div class="hero-main">
-        <div class="hero-badge glow-effect">${season.emoji} Saison ${season.name}</div>
-        <h1>${escapeHtml(p.name)}</h1>
-        <p class="hero-subtitle">${getPlayerTitle(p.level)} • Classe: <strong>${GAME_CONFIG.classesInfo[p.class]?.name || 'Guerrier'}</strong></p>
+  return `
+    <div class="hero-main">
+      <div class="hero-badge glow-effect">${season.emoji} Saison ${season.name}</div>
+      <h1>${escapeHtml(p.name)}</h1>
+      <p class="hero-subtitle">${getPlayerTitle(p.level)} • Classe: <strong>${GAME_CONFIG.classesInfo[p.class]?.name || 'Guerrier'}</strong></p>
+    </div>
+    <div class="hero-stats-summary">
+      <div style="margin-bottom: 10px; font-weight:700;">Niveau ${p.level} • <span style="color:#ffd700;">💰 ${p.gold} Or</span></div>
+      <div class="xp-bar-container" title="${p.xp} / ${reqXp} XP">
+        <div class="xp-bar-fill" style="width: ${xpPercent}%;"></div>
       </div>
-      <div class="hero-stats-summary">
-        <div style="margin-bottom: 10px; font-weight:700;">Niveau ${p.level} • <span style="color:#ffd700;">💰 ${p.gold} Or</span></div>
-        <div class="xp-bar-container" title="${p.xp} / ${reqXp} XP">
-          <div class="xp-bar-fill" style="width: ${xpPercent}%;"></div>
-        </div>
-        <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:5px; text-align:right;">${p.xp} / ${reqXp} XP (${xpPercent}%)</div>
-      </div>
-    `;
-  }
+      <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:5px; text-align:right;">${p.xp} / ${reqXp} XP (${xpPercent}%)</div>
+    </div>
+  `;
 }
 
-function renderQuests() {
-  const container = $('questsContainer');
-  if (!container) return;
-
-  let filtered = GameState.quests;
-  if (GameState.questFilter !== 'all') {
-    filtered = filtered.filter(q => q.type === GameState.questFilter || q.rarity === GameState.questFilter);
-  }
-
-  if (filtered.length === 0) {
-    container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Aucune quête trouvée pour ce filtre.</div>`;
-    return;
-  }
-
-  container.innerHTML = filtered.map(q => {
-    const rarityInfo = GAME_CONFIG.questRarities[q.rarity] || GAME_CONFIG.questRarities.E;
-    return `
-      <div class="quest-card rarity-${q.rarity.toLowerCase()} ${q.completed ? 'completed' : ''}">
-        <div>
-          <div class="quest-header">
-            <div class="quest-title">${escapeHtml(q.title)}</div>
-            <span class="quest-rarity">${rarityInfo.icon} ${q.rarity}</span>
-          </div>
-          <div class="quest-description">${escapeHtml(q.description)}</div>
-          <div class="quest-rewards">
-            <span class="quest-xp">+${q.xp} XP</span>
-            <span class="quest-gold">💰 +${q.gold}</span>
-            ${q.stat ? `<span class="quest-xp" style="color:#22c55e;">+1 ${GAME_CONFIG.statDefinitions[q.stat]?.label || ''}</span>` : ''}
-          </div>
+function buildQuestCardHtml(q) {
+  const rarityInfo = GAME_CONFIG.questRarities[q.rarity] || GAME_CONFIG.questRarities.E;
+  const statLabel = q.stat ? GAME_CONFIG.statDefinitions[q.stat]?.label || '' : '';
+  
+  return `
+    <div class="quest-card rarity-${q.rarity.toLowerCase()} ${q.completed ? 'completed' : ''}" data-quest-id="${escapeHtml(q.id)}">
+      <div>
+        <div class="quest-header">
+          <div class="quest-title">${escapeHtml(q.title)}</div>
+          <span class="quest-rarity">${rarityInfo.icon} ${q.rarity}</span>
         </div>
-        <div class="quest-footer">
-          ${q.completed 
-            ? `<button class="btn-complete" disabled style="background:#334155; cursor:default;">✔️ Accomplie</button>` 
-            : `<button class="btn-complete" onclick="completeQuest('${q.id}', event)">Valider la Quête</button>`}
+        <div class="quest-description">${escapeHtml(q.description)}</div>
+        <div class="quest-rewards">
+          <span class="quest-xp">+${q.xp} XP</span>
+          <span class="quest-gold">💰 +${q.gold}</span>
+          ${q.stat ? `<span class="quest-xp" style="color:#22c55e;">+1 ${statLabel}</span>` : ''}
         </div>
       </div>
-    `;
-  }).join('');
+      <div class="quest-footer">
+        ${q.completed 
+          ? `<button class="btn-complete" disabled style="background:#334155; cursor:default;">✔️ Accomplie</button>` 
+          : `<button class="btn-complete">Valider la Quête</button>`}
+      </div>
+    </div>
+  `;
 }
 
-function renderPlayers() {
-  const container = $('playersContainer');
-  if (!container) return;
-
+function buildPlayerCardHtml() {
   const p = GameState.player;
+  if (!p) return '';
+  
   const classInfo = GAME_CONFIG.classesInfo[p.class] || GAME_CONFIG.classesInfo.warrior;
 
-  container.innerHTML = `
+  const statsHtml = Object.entries(p.stats).map(([k, v]) => `
+    <div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:8px; font-size:0.9rem;">
+      ${GAME_CONFIG.statDefinitions[k]?.emoji || '📊'} ${GAME_CONFIG.statDefinitions[k]?.label || k}: <strong>${v}</strong>
+    </div>
+  `).join('');
+
+  const inventoryHtml = p.inventory.map(item => `
+    <span style="background:rgba(99, 102, 241, 0.2); border:1px solid rgba(99, 102, 241, 0.4); padding:4px 10px; border-radius:999px; font-size:0.85rem;">
+      ${item.icon} ${escapeHtml(item.name)} (+${item.bonus} ${item.stat})
+    </span>
+  `).join('');
+
+  return `
     <div class="player-card">
       <div class="player-header">
         <div class="player-avatar player-class-${p.class}">${classInfo.emoji}</div>
@@ -540,27 +555,30 @@ function renderPlayers() {
       <div>
         <strong>Stats IRL :</strong>
         <div class="stats-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px; margin-top:8px;">
-          ${Object.entries(p.stats).map(([k, v]) => `
-            <div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:8px; font-size:0.9rem;">
-              ${GAME_CONFIG.statDefinitions[k]?.emoji || '📊'} ${GAME_CONFIG.statDefinitions[k]?.label || k}: <strong>${v}</strong>
-            </div>
-          `).join('')}
+          ${statsHtml}
         </div>
       </div>
       <div>
         <strong>Équipement & Inventaire :</strong>
         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
-          ${p.inventory.map(item => `
-            <span style="background:rgba(99, 102, 241, 0.2); border:1px solid rgba(99, 102, 241, 0.4); padding:4px 10px; border-radius:999px; font-size:0.85rem;">
-              ${item.icon} ${escapeHtml(item.name)} (+${item.bonus} ${item.stat})
-            </span>
-          `).join('')}
+          ${inventoryHtml}
         </div>
       </div>
     </div>
   `;
 }
 
-function renderRaids() {
-  const container = $('raidsContainer');
-  if (!container) retu
+function buildRaidCardHtml(raid) {
+  const hpPercent = Math.max(0, Math.floor((raid.currentHp / raid.maxHp) * 100));
+  const isDefeated = raid.currentHp === 0;
+  
+  return `
+    <div class="raid-card ${isDefeated ? 'defeated' : ''}">
+      <div class="raid-header">
+        <div style="font-size:2rem;">${raid.icon}</div>
+        <div>
+          <h3>${escapeHtml(raid.name)}</h3>
+          <p style="font-size:0.9rem; color:var(--text-secondary);">${escapeHtml(raid.description)}</p>
+        </div>
+      </div>
+      <div class="raid-hp-bar" title="${raid.currentHp} / ${rai
