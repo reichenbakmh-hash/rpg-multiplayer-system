@@ -1,54 +1,43 @@
-/* RPG Quest Master
-   Script complet avec:
-   - joueurs / quêtes / raids
-   - stats IRL + titres
-   - inventaire + loot
-   - logs d’actions + annulation
-   - Firebase Auth
-   - chat groupe + DM temps réel
-   - sauvegarde localStorage + sync cloud optionnelle
-   - onglet Social injecté automatiquement si absent
-*/
+/* ==========================================================================
+   ⚔️ RPG QUEST MASTER - SCRIPT PRINCIPAL ÉLABORÉ (SCRIPT.JS)
+   ========================================================================== */
 
 'use strict';
 
-// ==================== CONFIGURATION ====================
+// ==================== 1. CONFIGURATION & DONNÉES DU JEU ====================
 
-const STORAGE_KEY = 'rpg_game_data_v2';
-const CLOUD_STATE_COLLECTION = 'userStates';
-const USERS_COLLECTION = 'users';
-const MESSAGES_COLLECTION = 'messages';
+const STORAGE_KEY = 'rpg_quest_master_data_v3';
 
 const GAME_CONFIG = {
   leveling: {
     baseXP: 100,
-    growth: 1.18
+    growth: 1.22
   },
   quests: {
     dailyCounts: { E: 5, D: 4, C: 3, B: 2, A: 1 },
-    undoWindowMs: 10 * 60 * 1000
+    undoWindowMs: 10 * 60 * 1000 // 10 minutes
   },
   seasons: {
-    spring: { name: 'Printemps', emoji: '🌸', months: [3, 4, 5] },
-    summer: { name: 'Été', emoji: '☀️', months: [6, 7, 8] },
-    autumn: { name: 'Automne', emoji: '🍂', months: [9, 10, 11] },
-    winter: { name: 'Hiver', emoji: '❄️', months: [12, 1, 2] }
+    spring: { name: 'Printemps Éthéré', emoji: '🌸', months: [3, 4, 5] },
+    summer: { name: 'Été Flamboyant', emoji: '☀️', months: [6, 7, 8] },
+    autumn: { name: 'Automne Mystique', emoji: '🍂', months: [9, 10, 11] },
+    winter: { name: 'Hiver Glacial', emoji: '❄️', months: [12, 1, 2] }
   },
   questRarities: {
-    E: { name: 'Très facile', xp: 5, color: '#95a5a6', icon: '⭐' },
-    D: { name: 'Facile', xp: 10, color: '#3498db', icon: '⭐' },
-    C: { name: 'Simple', xp: 20, color: '#2ecc71', icon: '⭐⭐' },
-    B: { name: 'Moyen', xp: 30, color: '#9b59b6', icon: '⭐⭐' },
-    A: { name: 'Difficile', xp: 40, color: '#f39c12', icon: '⭐⭐⭐' },
-    S: { name: 'Hebdomadaire', xp: 60, color: '#e67e22', icon: '⭐⭐⭐' },
-    SS: { name: 'Mensuelle', xp: 80, color: '#e74c3c', icon: '⭐⭐⭐⭐' },
-    SSS: { name: 'Annuelle', xp: 100, color: '#c0392b', icon: '⭐⭐⭐⭐⭐' }
+    E: { name: 'E - Très facile', xp: 15, gold: 5, color: '#475569', icon: '⚪' },
+    D: { name: 'D - Facile', xp: 30, gold: 12, color: '#94a3b8', icon: '🟢' },
+    C: { name: 'C - Simple', xp: 55, gold: 25, color: '#22c55e', icon: '🔵' },
+    B: { name: 'B - Moyen', xp: 90, gold: 45, color: '#06b6d4', icon: '🟣' },
+    A: { name: 'A - Difficile', xp: 140, gold: 75, color: '#f97316', icon: '🟠' },
+    S: { name: 'S - Hebdomadaire', xp: 250, gold: 150, color: '#ef4444', icon: '🔴' },
+    SS: { name: 'SS - Mensuelle', xp: 500, gold: 350, color: '#a855f7', icon: '🔮' },
+    SSS: { name: 'SSS - Annuelle Légendaire', xp: 1200, gold: 1000, color: '#ffd700', icon: '👑' }
   },
   classesInfo: {
-    warrior: { emoji: '⚔️', name: 'Guerrier', color: '#e74c3c' },
-    mage: { emoji: '🔮', name: 'Mage', color: '#9b59b6' },
-    archer: { emoji: '🏹', name: 'Archer', color: '#2ecc71' },
-    paladin: { emoji: '✨', name: 'Paladin', color: '#f39c12' }
+    warrior: { emoji: '⚔️', name: 'Guerrier de Sang', color: '#ef4444', primaryStat: 'physique' },
+    mage: { emoji: '🔮', name: 'Mage Arcanique', color: '#a855f7', primaryStat: 'intelligence' },
+    archer: { emoji: '🏹', name: 'Ranger de l’Ombre', color: '#22c55e', primaryStat: 'creativite' },
+    paladin: { emoji: '✨', name: 'Paladin Lumineux', color: '#f59e0b', primaryStat: 'discipline' }
   },
   statDefinitions: {
     physique: { label: 'Physique', emoji: '💪' },
@@ -60,187 +49,109 @@ const GAME_CONFIG = {
     finance: { label: 'Finance', emoji: '💰' }
   },
   internationalHolidays: [
+    { type: 'date', date: '01-01', name: 'Nouvel An', emoji: '🎆', stat: 'discipline' },
     { type: 'date', date: '03-08', name: 'Journée des Femmes', emoji: '👩', stat: 'social' },
-    { type: 'date', date: '03-21', name: 'Journée Mondiale de l’Eau', emoji: '💧', stat: 'sante' },
     { type: 'date', date: '04-22', name: 'Jour de la Terre', emoji: '🌍', stat: 'sante' },
     { type: 'date', date: '05-01', name: 'Fête du Travail', emoji: '👨‍💼', stat: 'discipline' },
-    { type: 'date', date: '06-05', name: 'Journée Mondiale de l’Environnement', emoji: '🌱', stat: 'sante' },
-    { type: 'date', date: '06-21', name: 'Journée de la Musique', emoji: '🎵', stat: 'creativite' },
+    { type: 'date', date: '06-21', name: 'Fête de la Musique', emoji: '🎵', stat: 'creativite' },
     { type: 'date', date: '10-31', name: 'Halloween', emoji: '👻', stat: 'social' },
     { type: 'date', date: '12-25', name: 'Noël', emoji: '🎄', stat: 'social' }
-  ],
-  madagascarHolidays: [
-    { type: 'date', date: '01-01', name: 'Nouvel An', emoji: '🎆', stat: 'discipline' },
-    { type: 'date', date: '03-29', name: 'Commémoration de la Rébellion de 1947', emoji: '🇲🇬', stat: 'discipline' },
-    { type: 'date', date: '05-01', name: 'Fête du Travail', emoji: '👨‍💼', stat: 'discipline' },
-    { type: 'date', date: '06-26', name: 'Fête de l’Indépendance', emoji: '🇲🇬', stat: 'social' },
-    { type: 'date', date: '08-15', name: 'Assomption', emoji: '⛪', stat: 'sante' },
-    { type: 'date', date: '11-01', name: 'Toussaint', emoji: '🕯️', stat: 'social' },
-    { type: 'date', date: '12-25', name: 'Noël', emoji: '🎄', stat: 'social' }
-  ],
-  japanHolidays: [
-    { type: 'date', date: '01-01', name: 'Nouvel An Japonais', emoji: '🎋', stat: 'discipline' },
-    { type: 'date', date: '01-10', name: 'Jour de la Majorité', emoji: '👘', stat: 'social' },
-    { type: 'date', date: '02-11', name: 'Fondation du Japon', emoji: '🏯', stat: 'discipline' },
-    { type: 'date', date: '03-21', name: 'Équinoxe du Printemps', emoji: '🌸', stat: 'creativite' },
-    { type: 'date', date: '05-03', name: 'Fête de la Constitution', emoji: '📜', stat: 'intelligence' },
-    { type: 'date', date: '05-05', name: 'Jour des Enfants', emoji: '🎏', stat: 'social' },
-    { type: 'range', month: 8, startDay: 13, endDay: 16, name: 'Obon', emoji: '🏮', stat: 'social' },
-    { type: 'date', date: '09-23', name: 'Équinoxe d’Automne', emoji: '🍂', stat: 'creativite' },
-    { type: 'date', date: '11-03', name: 'Jour de la Culture', emoji: '🎭', stat: 'creativite' },
-    { type: 'date', date: '11-23', name: 'Jour de Remerciement', emoji: '🙏', stat: 'social' }
   ]
 };
 
 const STAT_QUEST_POOLS = {
-  physique: ['Faire 20 squats', 'Marcher 20 minutes', 'Faire 10 pompes', 'Monter des escaliers pendant 10 minutes', 'Faire une séance d’étirements', 'Bouger sans écran pendant 30 minutes'],
-  intelligence: ['Lire 20 minutes', 'Apprendre 10 mots nouveaux', 'Résoudre un problème difficile', 'Regarder un cours utile', 'Écrire un résumé de ce que tu apprends', 'Étudier un sujet sans distraction'],
-  discipline: ['Planifier ta journée', 'Ranger ton espace de travail', 'Faire 25 minutes de focus profond', 'Terminer une tâche commencée', 'Respecter une routine complète', 'Ne pas procrastiner pendant 1 heure'],
-  social: ['Envoyer un message sincère', 'Parler positivement à quelqu’un', 'Prendre des nouvelles d’un proche', 'Aider une personne concrètement', 'Faire un compliment honnête', 'Créer un lien avec quelqu’un de nouveau'],
-  creativite: ['Écrire 100 mots', 'Dessiner quelque chose', 'Imaginer une idée de projet', 'Créer une mini histoire', 'Faire un croquis rapide', 'Réinventer une tâche quotidienne'],
-  sante: ['Boire suffisamment d’eau', 'Dormir à heure régulière', 'Respirer profondément 5 minutes', 'Manger plus proprement sur un repas', 'Faire une pause sans écran', 'Marcher après un repas'],
-  finance: ['Noter toutes tes dépenses du jour', 'Économiser une petite somme', 'Éviter un achat impulsif', 'Faire un mini budget', 'Comparer un prix avant d’acheter', 'Mettre de côté pour un objectif']
-};
-
-const QUEST_POOLS = {
-  weekly: [
-    { title: 'Duel épique', description: 'Terminer une activité coopérative avec un autre joueur.' },
-    { title: 'Trésor caché', description: 'Découvrir ou apprendre quelque chose de nouveau hors routine.' },
-    { title: 'Protection du royaume', description: 'Réduire une source de désordre dans ton environnement.' },
-    { title: 'Marche du héros', description: 'Cumuler une grosse session d’activité physique.' }
+  physique: [
+    'Réaliser 25 séries d’exercices physiques',
+    'Session de marche active de 30 minutes',
+    'Séance complète d’étirements musculaires',
+    'Monter 100 marches d’escalier d’affilée'
   ],
-  monthly: [
-    { title: 'Domination des donjons', description: 'Boucler une mission exigeante du mois.' },
-    { title: 'Maître du combat', description: 'Finir un objectif personnel marquant.' },
-    { title: 'Trésor des dragons', description: 'Faire un vrai progrès financier ou d’organisation.' },
-    { title: 'Héros légendaire', description: 'Soutenir plusieurs personnes ou projets sur la durée.' }
+  intelligence: [
+    'Lire 25 pages d’un livre d’apprentissage',
+    'Résoudre une énigme ou un problème complexe',
+    'Suivre un cours ou tutoriel instructif',
+    'Rédiger un résumé de connaissances acquises'
   ],
-  annual: [
-    { title: 'Conquête du royaume', description: 'Achever un objectif de fond qui change ton niveau global.' },
-    { title: 'Ascension ultime', description: 'Tenir une discipline importante sur toute l’année.' },
-    { title: 'Légende vivante', description: 'Construire quelque chose de solide, utile et durable.' },
-    { title: 'Couronnement', description: 'Atteindre un cap majeur que tu visais depuis longtemps.' }
+  discipline: [
+    'Planifier l’intégralité de la journée du lendemain',
+    'Session de focus profond (Pomodoro 45 min)',
+    'Ranger et purifier complètement le bureau',
+    'Exécuter la routine matinale sans déviation'
+  ],
+  social: [
+    'Prendre des nouvelles d’un ami ou proche',
+    'Exprimer un compliment sincère à quelqu’un',
+    'Participer à une discussion de groupe constructive',
+    'Aider activement un collègue ou membre de guilde'
+  ],
+  creativite: [
+    'Écrire 300 mots de création littéraire',
+    'Réaliser un dessin, schéma ou concept visuel',
+    'Proposer une solution innovante à un problème',
+    'Composer ou arranger un motif musical'
+  ],
+  sante: [
+    'Boire au minimum 2 Litres d’eau pure',
+    'Session de méditation et respiration de 10 min',
+    'Consommer un repas 100% équilibré et naturel',
+    'Éteindre tous les écrans 1 heure avant le coucher'
+  ],
+  finance: [
+    'Catégoriser et enregistrer toutes les dépenses du jour',
+    'Économiser une somme dédiée au coffre de guilde',
+    'Analyser son budget hebdomadaire',
+    'Éviter tout achat impulsif durant la journée'
   ]
 };
 
 const LOOT_TABLE = [
-  {
-    rarity: 'common',
-    weight: 60,
-    items: [
-      { name: 'Potion de concentration', stat: 'discipline', bonus: 1 },
-      { name: 'Bracelet de marche', stat: 'physique', bonus: 1 },
-      { name: 'Carnet de notes', stat: 'intelligence', bonus: 1 }
-    ]
-  },
-  {
-    rarity: 'rare',
-    weight: 25,
-    items: [
-      { name: 'Talisman du focus', stat: 'discipline', bonus: 2 },
-      { name: 'Bague de vitalité', stat: 'sante', bonus: 2 },
-      { name: 'Pendentif de charisme', stat: 'social', bonus: 2 }
-    ]
-  },
-  {
-    rarity: 'epic',
-    weight: 10,
-    items: [
-      { name: 'Grimoire de sagesse', stat: 'intelligence', bonus: 3 },
-      { name: 'Amulette du guerrier', stat: 'physique', bonus: 3 },
-      { name: 'Masque du créateur', stat: 'creativite', bonus: 3 }
-    ]
-  },
-  {
-    rarity: 'legendary',
-    weight: 5,
-    items: [
-      { name: 'Couronne du maître', stat: 'discipline', bonus: 5 },
-      { name: 'Cristal de prospérité', stat: 'finance', bonus: 5 },
-      { name: 'Sceau de légende', stat: 'all', bonus: 5 }
-    ]
-  }
+  { rarity: 'common', weight: 55, name: 'Potion de Volonté', stat: 'discipline', bonus: 2, icon: '🧪' },
+  { rarity: 'rare', weight: 28, name: 'Bague d’Endurance', stat: 'physique', bonus: 4, icon: '💍' },
+  { rarity: 'epic', weight: 12, name: 'Grimoire d’Omniscience', stat: 'intelligence', bonus: 7, icon: '📖' },
+  { rarity: 'legendary', weight: 5, name: 'Couronne du Monarque', stat: 'all', bonus: 12, icon: '👑' }
 ];
 
 const ACHIEVEMENTS = [
-  { id: 'first_quest', icon: '📜', name: 'Première quête', description: 'Compléter une quête', condition: p => p.completedQuests.length >= 1 },
-  { id: 'quest_master', icon: '🎯', name: 'Maître des quêtes', description: 'Compléter 10 quêtes', condition: p => p.completedQuests.length >= 10 },
-  { id: 'level_5', icon: '⬆️', name: 'Niveau 5', description: 'Atteindre le niveau 5', condition: p => p.level >= 5 },
-  { id: 'level_10', icon: '⬆️⬆️', name: 'Niveau 10', description: 'Atteindre le niveau 10', condition: p => p.level >= 10 },
-  { id: 'level_25', icon: '👑', name: 'Roi du combat', description: 'Atteindre le niveau 25', condition: p => p.level >= 25 },
-  { id: 'gold_farmer', icon: '💰', name: 'Collecteur d’or', description: 'Gagner 500 pièces', condition: p => p.gold >= 500 },
-  { id: 'rich', icon: '💎', name: 'Riche', description: 'Gagner 2000 pièces', condition: p => p.gold >= 2000 },
-  { id: 'hard_worker', icon: '💪', name: 'Travailleur acharné', description: 'Compléter 50 quêtes', condition: p => p.completedQuests.length >= 50 },
-  { id: 'discipline_master', icon: '🎯', name: 'Maître de la discipline', description: 'Atteindre 100 en discipline', condition: p => p.stats.discipline >= 100 },
-  { id: 'intelligence_master', icon: '🧠', name: 'Sage', description: 'Atteindre 100 en intelligence', condition: p => p.stats.intelligence >= 100 },
-  { id: 'finance_master', icon: '💰', name: 'Magnat', description: 'Atteindre 100 en finance', condition: p => p.stats.finance >= 100 },
-  { id: 'streak_7', icon: '🔥', name: 'Série de feu', description: 'Avoir une série de 7 jours', condition: p => p.streak.current >= 7 }
+  { id: 'first_quest', icon: '📜', name: 'Éveil du Héros', description: 'Compléter votre première quête', condition: p => p.completedQuests.length >= 1 },
+  { id: 'quest_10', icon: '🎯', name: 'Aventurier Assidu', description: 'Accomplir 10 quêtes au total', condition: p => p.completedQuests.length >= 10 },
+  { id: 'quest_50', icon: '⚔️', name: 'Tueur de Démons', description: 'Accomplir 50 quêtes', condition: p => p.completedQuests.length >= 50 },
+  { id: 'level_5', icon: '🌟', name: 'Ascension I', description: 'Atteindre le niveau 5', condition: p => p.level >= 5 },
+  { id: 'level_15', icon: '🔥', name: 'Ascension II', description: 'Atteindre le niveau 15', condition: p => p.level >= 15 },
+  { id: 'gold_1000', icon: '💰', name: 'Pactole Rutilant', description: 'Accumuler 1000 Pièces d’Or', condition: p => p.gold >= 1000 }
 ];
 
-const QUEST_TYPE_ORDER = { daily: 1, weekly: 2, monthly: 3, annual: 4, special: 5 };
-
-// ==================== HELPERS ====================
+// ==================== 2. FONCTIONS UTILITAIRES & HELPERS ====================
 
 const $ = (id) => document.getElementById(id);
 
-function safeJsonParse(value, fallback) {
-  try {
-    return value ? JSON.parse(value) : fallback;
-  } catch {
-    return fallback;
-  }
+function safeJsonParse(val, fallback) {
+  try { return val ? JSON.parse(val) : fallback; }
+  catch { return fallback; }
 }
 
-function deepClone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
+function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
 function uid(prefix = 'id') {
-  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 }
 
-function pad2(value) {
-  return String(value).padStart(2, '0');
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+function dateKey(d = new Date()) {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
-function dateKey(date = new Date()) {
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
-}
-
-function monthKey(date = new Date()) {
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}`;
-}
-
-function slugify(text) {
-  return String(text)
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_|_$/g, '');
-}
-
-function escapeHtml(text) {
-  return String(text)
+function escapeHtml(str) {
+  return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-function formatDate(date = new Date()) {
-  return date.toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+    .replace(/"/g, '&quot;');
 }
 
 function getCurrentSeason() {
-  const month = new Date().getMonth() + 1;
-  return Object.values(GAME_CONFIG.seasons).find(season => season.months.includes(month)) || GAME_CONFIG.seasons.spring;
+  const m = new Date().getMonth() + 1;
+  return Object.values(GAME_CONFIG.seasons).find(s => s.months.includes(m)) || GAME_CONFIG.seasons.spring;
 }
 
 function seedFromString(str) {
@@ -252,310 +163,404 @@ function seedFromString(str) {
   return Math.abs(h);
 }
 
-function pickDeterministic(array, seed) {
-  if (!array.length) return null;
-  return array[seed % array.length];
+function pickDeterministic(arr, seed) {
+  if (!arr || !arr.length) return null;
+  return arr[seed % arr.length];
 }
 
-function uniqById(items) {
-  return [...new Map(items.map(item => [item.id, item])).values()];
-}
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
-
-function sum(values) {
-  return values.reduce((acc, v) => acc + v, 0);
-}
-
-function getISOWeekKey(date = new Date()) {
-  const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const day = tmp.getUTCDay() || 7;
-  tmp.setUTCDate(tmp.getUTCDate() + 4 - day);
-  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
-  return `${tmp.getUTCFullYear()}-W${pad2(weekNo)}`;
-}
-
-function matchesHoliday(holiday, date = new Date()) {
-  const key = `${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
-  if (holiday.type === 'date') return holiday.date === key;
-  if (holiday.type === 'range') {
-    return date.getMonth() + 1 === holiday.month && date.getDate() >= holiday.startDay && date.getDate() <= holiday.endDay;
-  }
-  return false;
-}
-
-function getStrongestStat(stats) {
-  return Object.entries(stats).sort((a, b) => b[1] - a[1])[0]?.[0] || 'discipline';
-}
-
-function getWeakestStat(stats) {
-  return Object.entries(stats).sort((a, b) => a[1] - b[1])[0]?.[0] || 'discipline';
-}
-
-function getLootRarity() {
-  const roll = Math.random() * 100;
-  let acc = 0;
-  for (const tier of LOOT_TABLE) {
-    acc += tier.weight;
-    if (roll <= acc) return tier;
-  }
-  return LOOT_TABLE[0];
-}
-
-function createConfetti() {
-  const zone = $('confetti');
-  if (!zone) return;
-  zone.innerHTML = '';
-  for (let i = 0; i < 40; i++) {
-    const el = document.createElement('div');
-    el.className = 'confetti-piece';
-    el.style.left = Math.random() * 100 + '%';
-    el.style.setProperty('--x', (Math.random() - 0.5) * 200 + 'px');
-    el.style.setProperty('--rotation', Math.random() * 360 + 'deg');
-    zone.appendChild(el);
-    setTimeout(() => el.remove(), 2800);
-  }
-}
-
-function showToast(message, type = 'info') {
+function showToast(msg, type = 'info') {
   let container = $('toastContainer');
   if (!container) {
     container = document.createElement('div');
     container.id = 'toastContainer';
     document.body.appendChild(container);
   }
-
   const toast = document.createElement('div');
-  toast.className = `rpg-toast ${type}`;
-  toast.textContent = message;
+  toast.className = `rpg-toast ${type} show`;
+  toast.textContent = msg;
   container.appendChild(toast);
-
-  requestAnimationFrame(() => toast.classList.add('show'));
   setTimeout(() => {
     toast.classList.remove('show');
-    setTimeout(() => toast.remove(), 250);
-  }, 2200);
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
 }
 
-function injectEnhancementStyles() {
-  if ($('rpg-enhancement-styles')) return;
-  const style = document.createElement('style');
-  style.id = 'rpg-enhancement-styles';
-  style.textContent = `
-    .rpg-toast {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      transform: translateY(20px);
-      opacity: 0;
-      padding: 12px 16px;
-      border-radius: 14px;
-      background: rgba(17, 24, 39, 0.94);
-      color: #fff;
-      font-weight: 600;
-      box-shadow: 0 12px 28px rgba(0,0,0,.25);
-      z-index: 4000;
-      transition: all .25s ease;
-      backdrop-filter: blur(10px);
-      max-width: min(92vw, 360px);
-    }
-    .rpg-toast.show { opacity: 1; transform: translateY(0); }
-    .rpg-toast.success { border-left: 4px solid #2ecc71; }
-    .rpg-toast.warning { border-left: 4px solid #f39c12; }
-    .rpg-toast.error { border-left: 4px solid #e74c3c; }
-    .rpg-toast.info { border-left: 4px solid #3498db; }
+function showFloatingText(text, x, y, type = 'xp') {
+  const el = document.createElement('div');
+  el.className = type === 'damage' ? 'damage-notification damage-float' : 'xp-notification xp-float';
+  el.textContent = text;
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
 
-    .player-title {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      margin-top: 8px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, rgba(102,126,234,.15), rgba(118,75,162,.15));
-      font-weight: 700;
-      font-size: .9rem;
-    }
+function createConfetti() {
+  const zone = $('confetti');
+  if (!zone) return;
+  zone.innerHTML = '';
+  for (let i = 0; i < 35; i++) {
+    const p = document.createElement('div');
+    p.style.position = 'absolute';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.top = '-10px';
+    p.style.width = '8px';
+    p.style.height = '8px';
+    p.style.background = ['#ffd700', '#6366f1', '#a855f7', '#22c55e', '#ef4444'][Math.floor(Math.random() * 5)];
+    p.style.borderRadius = '50%';
+    p.style.transition = 'all 2.5s cubic-bezier(0.25, 1, 0.5, 1)';
+    zone.appendChild(p);
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 16px;
-    }
+    setTimeout(() => {
+      p.style.transform = `translate(${(Math.random() - 0.5) * 300}px, ${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`;
+      p.style.opacity = '0';
+    }, 50);
+    setTimeout(() => p.remove(), 2600);
+  }
+}
 
-    .stat-chip, .mini-card {
-      border-radius: 14px;
-      background: rgba(255,255,255,.82);
-      padding: 10px 12px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.06);
-      border: 1px solid rgba(255,255,255,.65);
-    }
+// ==================== 3. GESTION DE L'ÉTAT DU JEU (STATE) ====================
 
-    .stat-chip strong, .mini-card strong {
-      display: block;
-      font-size: .95rem;
-      margin-bottom: 4px;
-    }
+let GameState = {
+  player: null,
+  quests: [],
+  raids: [],
+  logs: [],
+  chatMessages: [],
+  activeTab: 'quests',
+  questFilter: 'all'
+};
 
-    .inventory-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
+function getRequiredXP(level) {
+  return Math.floor(GAME_CONFIG.leveling.baseXP * Math.pow(GAME_CONFIG.leveling.growth, level - 1));
+}
 
-    .inventory-item {
-      border-radius: 14px;
-      padding: 10px 12px;
-      background: linear-gradient(135deg, rgba(102,126,234,.08), rgba(118,75,162,.08));
-      border: 1px solid rgba(102,126,234,.12);
-    }
+function getPlayerTitle(level) {
+  if (level >= 30) return '👑 Souverain Divin';
+  if (level >= 20) return '⚔️ Légende Vivante';
+  if (level >= 10) return '🔥 Champion Arcanique';
+  if (level >= 5) return '🛡️ Aventurier Aguerri';
+  return '🌱 Novice Prometteur';
+}
 
-    .quest-focus-banner {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      padding: 10px 12px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, rgba(102,126,234,.10), rgba(118,75,162,.10));
-      border: 1px solid rgba(102,126,234,.14);
-      margin-bottom: 14px;
-    }
+function createDefaultPlayer(name = 'Chasseur S-Rank', pClass = 'warrior') {
+  return {
+    id: uid('player'),
+    name: name,
+    class: pClass,
+    level: 1,
+    xp: 0,
+    gold: 50,
+    stats: { physique: 10, intelligence: 10, discipline: 10, social: 10, creativite: 10, sante: 10, finance: 10 },
+    inventory: [
+      { id: uid('item'), name: 'Anneau de Débutant', stat: 'discipline', bonus: 1, icon: '💍', equipped: true }
+    ],
+    achievements: [],
+    completedQuests: [],
+    streak: { current: 1, lastDate: dateKey() }
+  };
+}
 
-    .social-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 16px;
-      align-items: start;
+function createDefaultRaids() {
+  return [
+    {
+      id: uid('raid'),
+      name: 'Seigneur des Ombres Ignis',
+      description: 'Un boss primordial résidant dans la faille temporelle. Infligez des dégâts en complétant vos quêtes !',
+      maxHp: 1000,
+      currentHp: 750,
+      rewards: { xp: 500, gold: 300 },
+      icon: '🐉'
     }
+  ];
+}
 
-    .social-card {
-      border-radius: 22px;
-      background: rgba(255,255,255,.92);
-      box-shadow: 0 16px 36px rgba(0,0,0,.08);
-      padding: 16px;
-      border: 1px solid rgba(255,255,255,.7);
-    }
+function loadState() {
+  const saved = safeJsonParse(localStorage.getItem(STORAGE_KEY), null);
+  if (saved) {
+    GameState = saved;
+  } else {
+    GameState.player = createDefaultPlayer();
+    GameState.raids = createDefaultRaids();
+    generateDailyQuests();
+    saveState();
+  }
+}
 
-    .social-card h3 {
-      margin-bottom: 12px;
-    }
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(GameState));
+}
 
-    .chat-shell {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      min-height: 340px;
-    }
+// ==================== 4. SYSTEME DE QUÊTES & RAIDS ====================
 
-    .chat-messages {
-      max-height: 320px;
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding-right: 4px;
-    }
+function generateDailyQuests() {
+  const today = dateKey();
+  const seed = seedFromString(today);
+  const newQuests = [];
 
-    .chat-message {
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(102,126,234,.06);
-      border: 1px solid rgba(102,126,234,.10);
-    }
+  // Quêtes quotidiennes générées dynamiquement
+  Object.entries(GAME_CONFIG.statDefinitions).forEach(([statKey, statInfo], idx) => {
+    const pool = STAT_QUEST_POOLS[statKey] || ['Mission spéciale de ' + statInfo.label];
+    const title = pickDeterministic(pool, seed + idx);
+    const rarity = idx % 2 === 0 ? 'D' : 'C';
 
-    .chat-message.me {
-      background: rgba(46,204,113,.08);
-      border-color: rgba(46,204,113,.16);
-      align-self: flex-end;
-    }
+    newQuests.push({
+      id: uid('quest'),
+      title: title,
+      description: `Développe ta stat [${statInfo.label}] pour renforcer ton personnage.`,
+      rarity: rarity,
+      type: 'daily',
+      stat: statKey,
+      xp: GAME_CONFIG.questRarities[rarity].xp,
+      gold: GAME_CONFIG.questRarities[rarity].gold,
+      dateCreated: today,
+      completed: false
+    });
+  });
 
-    .chat-meta {
-      font-size: .78rem;
-      color: #718096;
-      margin-bottom: 4px;
-    }
+  // Quête Légendaire Annuelle SSS
+  newQuests.push({
+    id: uid('quest_sss'),
+    title: 'Ascension Ultimatum SSS',
+    description: 'Atteignez un cap majeur de vie cette année pour débloquer le rang suprême.',
+    rarity: 'SSS',
+    type: 'annual',
+    stat: 'discipline',
+    xp: GAME_CONFIG.questRarities.SSS.xp,
+    gold: GAME_CONFIG.questRarities.SSS.gold,
+    dateCreated: today,
+    completed: false
+  });
 
-    .chat-input-row {
-      display: flex;
-      gap: 8px;
-    }
+  GameState.quests = [...GameState.quests.filter(q => q.type !== 'daily' || q.completed), ...newQuests];
+}
 
-    .chat-input-row input,
-    .auth-fields input,
-    .auth-fields select {
-      width: 100%;
-      border: 1px solid rgba(148,163,184,.35);
-      border-radius: 12px;
-      padding: 10px 12px;
-      outline: none;
-      background: #fff;
-    }
+function completeQuest(questId, event) {
+  const quest = GameState.quests.find(q => q.id === questId);
+  if (!quest || quest.completed) return;
 
-    .chat-user-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-height: 320px;
-      overflow: auto;
-    }
+  quest.completed = true;
+  quest.completedAt = Date.now();
 
-    .chat-user {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid rgba(148,163,184,.25);
-      border-radius: 14px;
-      padding: 10px 12px;
-      background: #fff;
-      cursor: pointer;
-    }
+  const player = GameState.player;
+  player.xp += quest.xp;
+  player.gold += quest.gold;
+  player.completedQuests.push(quest.id);
 
-    .chat-user.active {
-      border-color: rgba(102,126,234,.4);
-      background: linear-gradient(135deg, rgba(102,126,234,.08), rgba(118,75,162,.08));
-    }
+  // Augmentation de stat
+  if (quest.stat && player.stats[quest.stat] !== undefined) {
+    player.stats[quest.stat] += 1;
+  }
 
-    .badge-soft {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(102,126,234,.12);
-      font-size: .8rem;
-      font-weight: 700;
-      color: #1f2937;
-    }
+  // Animation Effet Flottant (XP & Or)
+  if (event && event.clientX) {
+    showFloatingText(`+${quest.xp} XP`, event.clientX, event.clientY - 20, 'xp');
+  }
 
-    .stat-pulse {
-      animation: statPulse .7s ease;
-    }
+  // Dégâts au Boss de Raid
+  damageActiveRaids(quest.xp, event);
 
-    @keyframes statPulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.04); }
-      100% { transform: scale(1); }
+  // Vérifier Level Up
+  checkLevelUp();
+
+  // Tirage de Loot
+  if (Math.random() < 0.35) {
+    triggerLootDrop();
+  }
+
+  // Log de l'action
+  addLog(`Quête accomplie : ${quest.title} (+${quest.xp} XP, +${quest.gold} Or)`, quest.id);
+
+  saveState();
+  renderAll();
+  createConfetti();
+  showToast(`Quête terminée ! +${quest.xp} XP / +${quest.gold} Or`, 'success');
+}
+
+function damageActiveRaids(damageAmount, event) {
+  GameState.raids.forEach(raid => {
+    if (raid.currentHp > 0) {
+      raid.currentHp = Math.max(0, raid.currentHp - damageAmount);
+      if (event && event.clientX) {
+        showFloatingText(`-${damageAmount} HP`, event.clientX + 40, event.clientY - 40, 'damage');
+      }
+      if (raid.currentHp === 0) {
+        GameState.player.xp += raid.rewards.xp;
+        GameState.player.gold += raid.rewards.gold;
+        showToast(`VICTOIRE DE RAID ! Boss ${raid.name} vaincu !`, 'success');
+      }
     }
+  });
+}
+
+function checkLevelUp() {
+  const player = GameState.player;
+  let req = getRequiredXP(player.level);
+
+  while (player.xp >= req) {
+    player.xp -= req;
+    player.level += 1;
+    req = getRequiredXP(player.level);
+    showToast(`🎉 MONTÉE DE NIVEAU ! Vous êtes désormais Niveau ${player.level} !`, 'success');
+  }
+}
+
+function triggerLootDrop() {
+  const loot = LOOT_TABLE[Math.floor(Math.random() * LOOT_TABLE.length)];
+  const item = {
+    id: uid('item'),
+    name: loot.name,
+    stat: loot.stat,
+    bonus: loot.bonus,
+    icon: loot.icon,
+    equipped: false
+  };
+  GameState.player.inventory.push(item);
+  showToast(`🎁 BUTIN TROUVÉ : ${item.icon} ${item.name} (+${item.bonus} ${item.stat})`, 'info');
+}
+
+function undoQuestCompletion(logId) {
+  const logIndex = GameState.logs.findIndex(l => l.id === logId);
+  if (logIndex === -1) return;
+
+  const log = GameState.logs[logIndex];
+  if (!log.questId) return;
+
+  const quest = GameState.quests.find(q => q.id === log.questId);
+  if (quest && quest.completed) {
+    quest.completed = false;
+    GameState.player.xp = Math.max(0, GameState.player.xp - quest.xp);
+    GameState.player.gold = Math.max(0, GameState.player.gold - quest.gold);
+    
+    // Retrait du journal
+    GameState.logs.splice(logIndex, 1);
+    
+    saveState();
+    renderAll();
+    showToast('Action annulée avec succès.', 'warning');
+  }
+}
+
+function addLog(text, questId = null) {
+  GameState.logs.unshift({
+    id: uid('log'),
+    text: text,
+    questId: questId,
+    timestamp: Date.now()
+  });
+  if (GameState.logs.length > 30) GameState.logs.pop();
+}
+
+// ==================== 5. RENDU DE L'INTERFACE (UI RENDERERS) ====================
+
+function renderHero() {
+  const p = GameState.player;
+  if (!p) return;
+
+  const reqXp = getRequiredXP(p.level);
+  const xpPercent = Math.min(100, Math.floor((p.xp / reqXp) * 100));
+  const season = getCurrentSeason();
+
+  // Injection du Header Hero
+  const heroContainer = $('heroPanel');
+  if (heroContainer) {
+    heroContainer.innerHTML = `
+      <div class="hero-main">
+        <div class="hero-badge glow-effect">${season.emoji} Saison ${season.name}</div>
+        <h1>${escapeHtml(p.name)}</h1>
+        <p class="hero-subtitle">${getPlayerTitle(p.level)} • Classe: <strong>${GAME_CONFIG.classesInfo[p.class]?.name || 'Guerrier'}</strong></p>
+      </div>
+      <div class="hero-stats-summary">
+        <div style="margin-bottom: 10px; font-weight:700;">Niveau ${p.level} • <span style="color:#ffd700;">💰 ${p.gold} Or</span></div>
+        <div class="xp-bar-container" title="${p.xp} / ${reqXp} XP">
+          <div class="xp-bar-fill" style="width: ${xpPercent}%;"></div>
+        </div>
+        <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:5px; text-align:right;">${p.xp} / ${reqXp} XP (${xpPercent}%)</div>
+      </div>
+    `;
+  }
+}
+
+function renderQuests() {
+  const container = $('questsContainer');
+  if (!container) return;
+
+  let filtered = GameState.quests;
+  if (GameState.questFilter !== 'all') {
+    filtered = filtered.filter(q => q.type === GameState.questFilter || q.rarity === GameState.questFilter);
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Aucune quête trouvée pour ce filtre.</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(q => {
+    const rarityInfo = GAME_CONFIG.questRarities[q.rarity] || GAME_CONFIG.questRarities.E;
+    return `
+      <div class="quest-card rarity-${q.rarity.toLowerCase()} ${q.completed ? 'completed' : ''}">
+        <div>
+          <div class="quest-header">
+            <div class="quest-title">${escapeHtml(q.title)}</div>
+            <span class="quest-rarity">${rarityInfo.icon} ${q.rarity}</span>
+          </div>
+          <div class="quest-description">${escapeHtml(q.description)}</div>
+          <div class="quest-rewards">
+            <span class="quest-xp">+${q.xp} XP</span>
+            <span class="quest-gold">💰 +${q.gold}</span>
+            ${q.stat ? `<span class="quest-xp" style="color:#22c55e;">+1 ${GAME_CONFIG.statDefinitions[q.stat]?.label || ''}</span>` : ''}
+          </div>
+        </div>
+        <div class="quest-footer">
+          ${q.completed 
+            ? `<button class="btn-complete" disabled style="background:#334155; cursor:default;">✔️ Accomplie</button>` 
+            : `<button class="btn-complete" onclick="completeQuest('${q.id}', event)">Valider la Quête</button>`}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderPlayers() {
+  const container = $('playersContainer');
+  if (!container) return;
+
+  const p = GameState.player;
+  const classInfo = GAME_CONFIG.classesInfo[p.class] || GAME_CONFIG.classesInfo.warrior;
+
+  container.innerHTML = `
+    <div class="player-card">
+      <div class="player-header">
+        <div class="player-avatar player-class-${p.class}">${classInfo.emoji}</div>
+        <div class="player-info">
+          <h3>${escapeHtml(p.name)}</h3>
+          <span class="player-badge">${classInfo.name}</span>
+        </div>
+      </div>
+      <div>
+        <strong>Stats IRL :</strong>
+        <div class="stats-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:8px; margin-top:8px;">
+          ${Object.entries(p.stats).map(([k, v]) => `
+            <div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:8px; font-size:0.9rem;">
+              ${GAME_CONFIG.statDefinitions[k]?.emoji || '📊'} ${GAME_CONFIG.statDefinitions[k]?.label || k}: <strong>${v}</strong>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div>
+        <strong>Équipement & Inventaire :</strong>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+          ${p.inventory.map(item => `
+            <span style="background:rgba(99, 102, 241, 0.2); border:1px solid rgba(99, 102, 241, 0.4); padding:4px 10px; border-radius:999px; font-size:0.85rem;">
+              ${item.icon} ${escapeHtml(item.name)} (+${item.bonus} ${item.stat})
+            </span>
+          `).join('')}
+        </div>
+      </div>
+    </div>
   `;
-  document.head.appendChild(style);
 }
 
-function ensureOptionalUI() {
-  const mainContent = document.querySelector('.main-content');
-  const navTabs = document.querySelector('.nav-tabs');
-  if (!mainContent || !navTabs) return;
-
-  if (!document.getElementById('social-tab')) {
-    if (!navTabs.querySelector('[data-tab="social"]')) {
-      const btn = document.createElement('button');
-      btn.className = 'tab-btn';
-      btn.dataset.tab = 'social';
-      btn.textContent = '💬 Social';
-      navTabs.appe
+function renderRaids() {
+  const container = $('raidsContainer');
+  if (!container) retu
