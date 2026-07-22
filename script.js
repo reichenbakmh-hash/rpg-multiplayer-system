@@ -1,9 +1,32 @@
+/* RPG Quest Master
+   Script complet avec:
+   - joueurs / quêtes / raids
+   - stats IRL + titres
+   - inventaire + loot
+   - logs d’actions + annulation
+   - Firebase Auth
+   - chat groupe + DM temps réel
+   - sauvegarde localStorage + sync cloud optionnelle
+   - onglet Social injecté automatiquement si absent
+*/
+
+'use strict';
+
 // ==================== CONFIGURATION ====================
+
+const STORAGE_KEY = 'rpg_game_data_v2';
+const CLOUD_STATE_COLLECTION = 'userStates';
+const USERS_COLLECTION = 'users';
+const MESSAGES_COLLECTION = 'messages';
 
 const GAME_CONFIG = {
   leveling: {
     baseXP: 100,
     growth: 1.18
+  },
+  quests: {
+    dailyCounts: { E: 5, D: 4, C: 3, B: 2, A: 1 },
+    undoWindowMs: 10 * 60 * 1000
   },
   seasons: {
     spring: { name: 'Printemps', emoji: '🌸', months: [3, 4, 5] },
@@ -36,7 +59,6 @@ const GAME_CONFIG = {
     sante: { label: 'Santé', emoji: '❤️' },
     finance: { label: 'Finance', emoji: '💰' }
   },
-  statOrder: ['discipline', 'physique', 'sante', 'intelligence', 'social', 'creativite', 'finance'],
   internationalHolidays: [
     { type: 'date', date: '03-08', name: 'Journée des Femmes', emoji: '👩', stat: 'social' },
     { type: 'date', date: '03-21', name: 'Journée Mondiale de l’Eau', emoji: '💧', stat: 'sante' },
@@ -71,62 +93,13 @@ const GAME_CONFIG = {
 };
 
 const STAT_QUEST_POOLS = {
-  physique: [
-    'Faire 20 squats',
-    'Marcher 20 minutes',
-    'Faire 10 pompes',
-    'Monter des escaliers pendant 10 minutes',
-    'Faire une séance d’étirements',
-    'Bouger sans écran pendant 30 minutes'
-  ],
-  intelligence: [
-    'Lire 20 minutes',
-    'Apprendre 10 mots nouveaux',
-    'Résoudre un problème difficile',
-    'Regarder un cours utile',
-    'Écrire un résumé de ce que tu apprends',
-    'Étudier un sujet sans distraction'
-  ],
-  discipline: [
-    'Planifier ta journée',
-    'Ranger ton espace de travail',
-    'Faire 25 minutes de focus profond',
-    'Terminer une tâche commencée',
-    'Respecter une routine complète',
-    'Ne pas procrastiner pendant 1 heure'
-  ],
-  social: [
-    'Envoyer un message sincère',
-    'Parler positivement à quelqu’un',
-    'Prendre des nouvelles d’un proche',
-    'Aider une personne concrètement',
-    'Faire un compliment honnête',
-    'Créer un lien avec quelqu’un de nouveau'
-  ],
-  creativite: [
-    'Écrire 100 mots',
-    'Dessiner quelque chose',
-    'Imaginer une idée de projet',
-    'Créer une mini histoire',
-    'Faire un croquis rapide',
-    'Réinventer une tâche quotidienne'
-  ],
-  sante: [
-    'Boire suffisamment d’eau',
-    'Dormir à heure régulière',
-    'Respirer profondément 5 minutes',
-    'Manger plus proprement sur un repas',
-    'Faire une pause sans écran',
-    'Marcher après un repas'
-  ],
-  finance: [
-    'Noter toutes tes dépenses du jour',
-    'Économiser une petite somme',
-    'Éviter un achat impulsif',
-    'Faire un mini budget',
-    'Comparer un prix avant d’acheter',
-    'Mettre de côté pour un objectif'
-  ]
+  physique: ['Faire 20 squats', 'Marcher 20 minutes', 'Faire 10 pompes', 'Monter des escaliers pendant 10 minutes', 'Faire une séance d’étirements', 'Bouger sans écran pendant 30 minutes'],
+  intelligence: ['Lire 20 minutes', 'Apprendre 10 mots nouveaux', 'Résoudre un problème difficile', 'Regarder un cours utile', 'Écrire un résumé de ce que tu apprends', 'Étudier un sujet sans distraction'],
+  discipline: ['Planifier ta journée', 'Ranger ton espace de travail', 'Faire 25 minutes de focus profond', 'Terminer une tâche commencée', 'Respecter une routine complète', 'Ne pas procrastiner pendant 1 heure'],
+  social: ['Envoyer un message sincère', 'Parler positivement à quelqu’un', 'Prendre des nouvelles d’un proche', 'Aider une personne concrètement', 'Faire un compliment honnête', 'Créer un lien avec quelqu’un de nouveau'],
+  creativite: ['Écrire 100 mots', 'Dessiner quelque chose', 'Imaginer une idée de projet', 'Créer une mini histoire', 'Faire un croquis rapide', 'Réinventer une tâche quotidienne'],
+  sante: ['Boire suffisamment d’eau', 'Dormir à heure régulière', 'Respirer profondément 5 minutes', 'Manger plus proprement sur un repas', 'Faire une pause sans écran', 'Marcher après un repas'],
+  finance: ['Noter toutes tes dépenses du jour', 'Économiser une petite somme', 'Éviter un achat impulsif', 'Faire un mini budget', 'Comparer un prix avant d’acheter', 'Mettre de côté pour un objectif']
 };
 
 const QUEST_POOLS = {
@@ -204,13 +177,7 @@ const ACHIEVEMENTS = [
   { id: 'streak_7', icon: '🔥', name: 'Série de feu', description: 'Avoir une série de 7 jours', condition: p => p.streak.current >= 7 }
 ];
 
-const QUEST_TYPE_ORDER = {
-  daily: 1,
-  weekly: 2,
-  monthly: 3,
-  annual: 4,
-  special: 5
-};
+const QUEST_TYPE_ORDER = { daily: 1, weekly: 2, monthly: 3, annual: 4, special: 5 };
 
 // ==================== HELPERS ====================
 
@@ -222,6 +189,14 @@ function safeJsonParse(value, fallback) {
   } catch {
     return fallback;
   }
+}
+
+function deepClone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function uid(prefix = 'id') {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function pad2(value) {
@@ -245,10 +220,6 @@ function slugify(text) {
     .replace(/^_|_$/g, '');
 }
 
-function uid(prefix = 'id') {
-  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-}
-
 function escapeHtml(text) {
   return String(text)
     .replace(/&/g, '&amp;')
@@ -270,15 +241,6 @@ function formatDate(date = new Date()) {
 function getCurrentSeason() {
   const month = new Date().getMonth() + 1;
   return Object.values(GAME_CONFIG.seasons).find(season => season.months.includes(month)) || GAME_CONFIG.seasons.spring;
-}
-
-function isYesterday(prev, current = new Date()) {
-  if (!prev) return false;
-  const p = new Date(prev);
-  const c = new Date(current);
-  p.setHours(0, 0, 0, 0);
-  c.setHours(0, 0, 0, 0);
-  return Math.round((c - p) / 86400000) === 1;
 }
 
 function seedFromString(str) {
@@ -307,6 +269,24 @@ function sum(values) {
   return values.reduce((acc, v) => acc + v, 0);
 }
 
+function getISOWeekKey(date = new Date()) {
+  const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = tmp.getUTCDay() || 7;
+  tmp.setUTCDate(tmp.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
+  return `${tmp.getUTCFullYear()}-W${pad2(weekNo)}`;
+}
+
+function matchesHoliday(holiday, date = new Date()) {
+  const key = `${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+  if (holiday.type === 'date') return holiday.date === key;
+  if (holiday.type === 'range') {
+    return date.getMonth() + 1 === holiday.month && date.getDate() >= holiday.startDay && date.getDate() <= holiday.endDay;
+  }
+  return false;
+}
+
 function getStrongestStat(stats) {
   return Object.entries(stats).sort((a, b) => b[1] - a[1])[0]?.[0] || 'discipline';
 }
@@ -328,7 +308,6 @@ function getLootRarity() {
 function createConfetti() {
   const zone = $('confetti');
   if (!zone) return;
-
   zone.innerHTML = '';
   for (let i = 0; i < 40; i++) {
     const el = document.createElement('div');
@@ -363,7 +342,6 @@ function showToast(message, type = 'info') {
 
 function injectEnhancementStyles() {
   if ($('rpg-enhancement-styles')) return;
-
   const style = document.createElement('style');
   style.id = 'rpg-enhancement-styles';
   style.textContent = `
@@ -411,7 +389,7 @@ function injectEnhancementStyles() {
 
     .stat-chip, .mini-card {
       border-radius: 14px;
-      background: rgba(255,255,255,.8);
+      background: rgba(255,255,255,.82);
       padding: 10px 12px;
       box-shadow: 0 8px 18px rgba(0,0,0,.06);
       border: 1px solid rgba(255,255,255,.65);
@@ -449,6 +427,113 @@ function injectEnhancementStyles() {
       margin-bottom: 14px;
     }
 
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+
+    .social-card {
+      border-radius: 22px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 16px 36px rgba(0,0,0,.08);
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.7);
+    }
+
+    .social-card h3 {
+      margin-bottom: 12px;
+    }
+
+    .chat-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 340px;
+    }
+
+    .chat-messages {
+      max-height: 320px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+
+    .chat-message {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(102,126,234,.06);
+      border: 1px solid rgba(102,126,234,.10);
+    }
+
+    .chat-message.me {
+      background: rgba(46,204,113,.08);
+      border-color: rgba(46,204,113,.16);
+      align-self: flex-end;
+    }
+
+    .chat-meta {
+      font-size: .78rem;
+      color: #718096;
+      margin-bottom: 4px;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input-row input,
+    .auth-fields input,
+    .auth-fields select {
+      width: 100%;
+      border: 1px solid rgba(148,163,184,.35);
+      border-radius: 12px;
+      padding: 10px 12px;
+      outline: none;
+      background: #fff;
+    }
+
+    .chat-user-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 320px;
+      overflow: auto;
+    }
+
+    .chat-user {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(148,163,184,.25);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .chat-user.active {
+      border-color: rgba(102,126,234,.4);
+      background: linear-gradient(135deg, rgba(102,126,234,.08), rgba(118,75,162,.08));
+    }
+
+    .badge-soft {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(102,126,234,.12);
+      font-size: .8rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
     .stat-pulse {
       animation: statPulse .7s ease;
     }
@@ -462,113 +547,15 @@ function injectEnhancementStyles() {
   document.head.appendChild(style);
 }
 
-function ensureQuestOverviewCards() {
-  const container = document.querySelector('.quests-info');
-  if (!container) return;
+function ensureOptionalUI() {
+  const mainContent = document.querySelector('.main-content');
+  const navTabs = document.querySelector('.nav-tabs');
+  if (!mainContent || !navTabs) return;
 
-  const cards = [
-    { id: 'totalPlayersCard', label: '👥 Joueurs', value: '0' },
-    { id: 'totalCompletedCard', label: '✅ Quêtes accomplies', value: '0' },
-    { id: 'avgLevelCard', label: '⭐ Niveau moyen', value: '0' },
-    { id: 'focusStatCard', label: '🎯 Focus du jour', value: 'Créer un joueur' }
-  ];
-
-  cards.forEach(card => {
-    if (!document.getElementById(card.id)) {
-      const el = document.createElement('div');
-      el.className = 'info-card';
-      el.id = card.id;
-      el.innerHTML = `<span class="info-label">${card.label}:</span><span class="info-value">${card.value}</span>`;
-      container.appendChild(el);
-    }
-  });
-}
-
-function updateQuestOverviewCards() {
-  const players = Object.values(gameData.players);
-  const completedCount = sum(players.map(p => p.completedQuests.length));
-  const avgLevel = players.length ? (sum(players.map(p => p.level)) / players.length).toFixed(1) : '0.0';
-  const focus = getCurrentFocusLabel();
-
-  const map = {
-    totalPlayersCard: players.length,
-    totalCompletedCard: completedCount,
-    avgLevelCard: avgLevel,
-    focusStatCard: focus
-  };
-
-  Object.entries(map).forEach(([id, value]) => {
-    const card = $(id);
-    if (card) {
-      const val = card.querySelector('.info-value');
-      if (val) val.textContent = value;
-    }
-  });
-}
-
-function getCurrentFocusLabel() {
-  const players = Object.values(gameData.players);
-  if (!players.length) return 'Créer un joueur';
-
-  const aggregate = {
-    physique: 0,
-    intelligence: 0,
-    discipline: 0,
-    social: 0,
-    creativite: 0,
-    sante: 0,
-    finance: 0
-  };
-
-  players.forEach(player => {
-    Object.entries(player.stats).forEach(([stat, value]) => {
-      if (aggregate[stat] !== undefined) {
-        aggregate[stat] += value;
-      }
-    });
-  });
-
-  const weakest = Object.entries(aggregate).sort((a, b) => a[1] - b[1])[0]?.[0] || 'discipline';
-  return `${GAME_CONFIG.statDefinitions[weakest].emoji} ${GAME_CONFIG.statDefinitions[weakest].label}`;
-}
-
-function getISOWeekKey(date = new Date()) {
-  const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const day = tmp.getUTCDay() || 7;
-  tmp.setUTCDate(tmp.getUTCDate() + 4 - day);
-  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7);
-  return `${tmp.getUTCFullYear()}-W${pad2(weekNo)}`;
-}
-
-function matchesHoliday(holiday, date = new Date()) {
-  const key = `${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
-  if (holiday.type === 'date') return holiday.date === key;
-  if (holiday.type === 'range') {
-    return date.getMonth() + 1 === holiday.month && date.getDate() >= holiday.startDay && date.getDate() <= holiday.endDay;
-  }
-  return false;
-}
-
-function getPlayerDailyQuestBonus(player) {
-  return {
-    strongest: getStrongestStat(player.stats),
-    weakest: getWeakestStat(player.stats)
-  };
-}
-
-// ==================== MODELS ====================
-
-class Player {
-  constructor(id, name, playerClass, data = {}) {
-    this.id = id;
-    this.name = name;
-    this.class = playerClass;
-    this.level = data.level ?? 1;
-    this.xp = data.xp ?? 0;
-    this.xpNeeded = data.xpNeeded ?? GAME_CONFIG.leveling.baseXP;
-    this.gold = data.gold ?? 0;
-    this.stats = data.stats || this.initializeStats();
-    this.completedQuests = Array.isArray(data.completedQuests) ? data.completedQuests : [];
-    this.skills = data.skills || this.initializeSkills();
-    this.badges = Array.isArray
+  if (!document.getElementById('social-tab')) {
+    if (!navTabs.querySelector('[data-tab="social"]')) {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn';
+      btn.dataset.tab = 'social';
+      btn.textContent = '💬 Social';
+      navTabs.appe
