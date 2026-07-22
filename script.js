@@ -6,10 +6,10 @@ const GAME_CONFIG = {
     growth: 1.18
   },
   seasons: {
-    spring: { name: 'Printemps', emoji: '🌸', months: [3, 4, 5] },
-    summer: { name: 'Été', emoji: '☀️', months: [6, 7, 8] },
-    autumn: { name: 'Automne', emoji: '🍂', months: [9, 10, 11] },
-    winter: { name: 'Hiver', emoji: '❄️', months: [12, 1, 2] }
+    spring: { name: 'Printemps', emoji: '🌸', months: [9, 10, 11] },
+    summer: { name: 'Été', emoji: '☀️', months: [12, 1, 2] },
+    autumn: { name: 'Automne', emoji: '🍂', months: [3, 4, 5] },
+    winter: { name: 'Hiver', emoji: '❄️', months: [6, 7, 8] }
   },
   questRarities: {
     E: { name: 'Très facile', xp: 5, color: '#95a5a6', icon: '⭐' },
