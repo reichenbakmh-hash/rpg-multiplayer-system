@@ -183,6 +183,35 @@
 
     <!-- Floating Damage Notification -->
     <div id="damageNotification" class="damage-notification"></div>
+    <!-- Firebase Config -->
+    <script type="module">
+      // Import Firebase SDK
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+      import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+      // Ton bloc firebaseConfig
+      const firebaseConfig = {
+        apiKey: "AIzaSyASVyXFlzMLXCLEnktbSzGNm82KSqG_G7w",
+        authDomain: "rpg-multiplayer-system.firebaseapp.com",
+        projectId: "rpg-multiplayer-system",
+        storageBucket: "rpg-multiplayer-system.firebasestorage.app",
+        messagingSenderId: "614775769148",
+        appId: "1:614775769148:web:14c1ccc6ea1c5cba169b39",
+        measurementId: "G-C70EMXRHDY"
+      };
+
+      // Initialisation Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // Exporter db pour script.js
+      window.db = db;
+    </script>
+
+    <!-- Ton script principal -->
+    <script src="script.js"></script>
+</body>
+</html>
 
     <script src="script.js"></script>
 </body>
