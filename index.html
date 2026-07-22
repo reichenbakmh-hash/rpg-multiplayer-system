@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RPG Quest Master - Système de quêtes multijoueurs avec XP, niveaux, raids coopératifs et événements spéciaux.">
+    <meta name="theme-color" content="#667eea">
     <title>RPG MultiJoueurs - Système d'XP et Quêtes</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Audio Elements -->
-    <audio id="bgm" loop volume="0.3">
+    <audio id="bgm" loop preload="auto">
         <source src="assets/audio/bgm.mp3" type="audio/mpeg">
     </audio>
-    <audio id="soundEffect"></audio>
+
+    <audio id="soundEffect" preload="auto">
+        <source src="assets/audio/success.mp3" type="audio/mpeg">
+    </audio>
 
     <div class="container">
         <!-- Header -->
@@ -46,6 +51,7 @@
                         <button class="filter-btn" data-filter="daily">Quotidiennes</button>
                         <button class="filter-btn" data-filter="weekly">Hebdo</button>
                         <button class="filter-btn" data-filter="monthly">Mensuel</button>
+                        <button class="filter-btn" data-filter="annual">Annuel</button>
                         <button class="filter-btn" data-filter="special">Spéciales</button>
                     </div>
                 </div>
@@ -183,13 +189,12 @@
 
     <!-- Floating Damage Notification -->
     <div id="damageNotification" class="damage-notification"></div>
+
     <!-- Firebase Config -->
     <script type="module">
-      // Import Firebase SDK
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
       import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-      // Ton bloc firebaseConfig
       const firebaseConfig = {
         apiKey: "AIzaSyASVyXFlzMLXCLEnktbSzGNm82KSqG_G7w",
         authDomain: "rpg-multiplayer-system.firebaseapp.com",
@@ -200,19 +205,25 @@
         measurementId: "G-C70EMXRHDY"
       };
 
-      // Initialisation Firebase
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      // Exporter db pour script.js
       window.db = db;
+      window.firebaseApp = app;
+    </script>
+
+    <!-- Unblock audio on first interaction -->
+    <script>
+      document.addEventListener('pointerdown', () => {
+        const bgm = document.getElementById('bgm');
+        if (bgm) {
+          bgm.volume = 0.3;
+          bgm.play().catch(() => {});
+        }
+      }, { once: true });
     </script>
 
     <!-- Ton script principal -->
-    <script src="script.js"></script>
-</body>
-</html>
-
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
